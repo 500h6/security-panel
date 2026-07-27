@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APEX SECURITY — لوحة التحكم (Firebase Auth)</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#070b14; --surface:#0d1526; --card:#111827; --border:#1e2d4a;
+    --accent:#00e5ff; --green:#10b981; --red:#ef4444; --orange:#f97316;
+    --text:#e2e8f0; --muted:#64748b; --glow:0 0 20px rgba(0,229,255,.15);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+  /* Config */
+  #configScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0d1526,#070b14);z-index:1000;}
+  #configScreen.hidden{display:none;}
+  .config-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px;width:560px;max-width:95vw;}
+  .config-box h2{font-size:20px;font-weight:800;color:var(--accent);margin-bottom:6px;}
+  .config-box>p{color:var(--muted);font-size:13px;margin-bottom:20px;line-height:1.7;}
+  .step{display:flex;gap:12px;margin-bottom:14px;}
+  .step-num{width:26px;height:26px;border-radius:50%;flex-shrink:0;background:rgba(0,229,255,.12);border:1px solid var(--accent);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .step-text{font-size:13px;color:var(--muted);line-height:1.6;}
+  .step-text a{color:var(--accent);}
+  .step-text code{background:var(--surface);padding:1px 5px;border-radius:4px;font-size:11px;color:var(--accent);}
+
+  /* Login */
+  #loginScreen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0d1526,#070b14);z-index:900;transition:opacity .3s;}
+  #loginScreen.show{display:flex;}
+  #loginScreen.hidden{opacity:0;pointer-events:none;}
+  .login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:44px 38px;width:380px;text-align:center;box-shadow:var(--glow),0 25px 50px rgba(0,0,0,.5);}
+  .login-logo{font-size:24px;font-weight:800;color:var(--accent);letter-spacing:2px;margin-bottom:4px;text-shadow:0 0 30px rgba(0,229,255,.4);}
+  .login-sub{color:var(--muted);font-size:13px;margin-bottom:28px;}
+  #loginError{color:var(--red);font-size:13px;margin-top:10px;display:none;}
+
+  /* App */
+  #app{display:none;min-height:100vh;}
+  #app.show{display:block;}
+
+  /* Sidebar */
+  .sidebar{position:fixed;top:0;right:0;width:250px;height:100vh;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
+  .sidebar-brand{padding:22px 18px;border-bottom:1px solid var(--border);}
+  .brand-title{font-size:17px;font-weight:800;color:var(--accent);letter-spacing:1px;}
+  .brand-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+  .nav-section{padding:14px 10px 6px;}
+  .nav-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;padding:0 8px;margin-bottom:6px;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:.15s;margin-bottom:2px;font-size:14px;font-weight:500;color:var(--muted);border:none;background:none;width:100%;text-align:right;font-family:'Tajawal',sans-serif;}
+  .nav-item:hover{background:rgba(255,255,255,.05);color:var(--text);}
+  .nav-item.active{background:rgba(0,229,255,.1);color:var(--accent);}
+  .sidebar-footer{margin-top:auto;padding:14px 18px;border-top:1px solid var(--border);}
+  .sidebar-footer .fb-url{font-size:10px;word-break:break-all;color:var(--accent);margin-bottom:8px;}
+  .logout-btn{padding:8px 12px;border-radius:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:var(--red);font-size:13px;cursor:pointer;width:100%;font-family:'Tajawal',sans-serif;transition:.2s;}
+  .logout-btn:hover{background:rgba(239,68,68,.2);}
+
+  /* Main */
+  .main{margin-right:250px;padding:28px;min-height:100vh;}
+  .page-header{margin-bottom:24px;}
+  .page-header h1{font-size:22px;font-weight:800;}
+  .page-header p{color:var(--muted);font-size:13px;margin-top:3px;}
+
+  /* Stats */
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:18px;position:relative;overflow:hidden;}
+  .stat-icon{font-size:22px;margin-bottom:10px;}
+  .stat-value{font-size:30px;font-weight:800;}
+  .stat-label{font-size:12px;color:var(--muted);margin-top:3px;}
+  .stat-card.c-accent .stat-value{color:var(--accent);}
+  .stat-card.c-green .stat-value{color:var(--green);}
+  .stat-card.c-red .stat-value{color:var(--red);}
+  .stat-card.c-orange .stat-value{color:var(--orange);}
+
+  /* Panels */
+  .panels{display:grid;grid-template-columns:1fr 360px;gap:20px;}
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+  .panel-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .panel-header h2{font-size:15px;font-weight:700;}
+  .panel-body{padding:20px;}
+
+  /* Form */
+  .form-group{margin-bottom:14px; text-align:right;}
+  .form-label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:500;}
+  .form-control{width:100%;padding:10px 13px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;transition:.2s;text-align:right;}
+  .form-control:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,.07);}
+  textarea.form-control{min-height:90px; font-family:monospace; font-size:12px; direction:ltr; text-align:left;}
+  .duration-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:14px;}
+  .duration-btn{padding:9px;border-radius:8px;text-align:center;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:.2s;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:500;}
+  .duration-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .duration-btn.selected{border-color:var(--accent);background:rgba(0,229,255,.1);color:var(--accent);}
+
+  /* Buttons */
+  .btn-primary{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),#0891b2);border:none;border-radius:9px;color:#000;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;margin-top:6px;}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,229,255,.3);}
+  .btn-add{width:100%;padding:12px;background:linear-gradient(135deg,var(--green),#059669);border:none;border-radius:9px;color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;}
+  .btn-add:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(16,185,129,.3);}
+  .btn-add:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+  .btn-sm{padding:6px 12px;border-radius:7px;font-size:13px;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;transition:.2s;}
+  .btn-refresh{background:rgba(0,229,255,.1);color:var(--accent);}
+  .btn-refresh:hover{background:rgba(0,229,255,.2);}
+
+  /* Search/Filter */
+  .search-bar{margin-bottom:12px;}
+  .search-bar input{width:100%;padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;text-align:right;}
+  .search-bar input:focus{border-color:var(--accent);}
+  .filter-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+  .filter-tab{padding:5px 14px;border-radius:20px;font-size:12px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:.15s;font-family:'Tajawal',sans-serif;}
+  .filter-tab.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;}
+
+  /* Table */
+  .users-table{width:100%;border-collapse:collapse;}
+  .users-table th{padding:9px 13px;text-align:right;font-size:11px;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);font-weight:600;}
+  .users-table td{padding:12px 13px;border-bottom:1px solid rgba(30,45,74,.4);font-size:13px;vertical-align:middle;}
+  .users-table tr:last-child td{border-bottom:none;}
+  .users-table tr:hover td{background:rgba(255,255,255,.02);}
+  .device-id{font-family:monospace;font-size:12px;color:var(--accent);cursor:pointer;}
+  .device-id:hover{text-decoration:underline;}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+  .badge-active{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3);}
+  .badge-expired{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);}
+  .badge-soon{background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3);}
+  .action-btns{display:flex;gap:5px;justify-content:flex-end;}
+  .btn-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;transition:.15s;font-size:14px;}
+  .btn-renew{background:rgba(16,185,129,.1);color:var(--green);}
+  .btn-renew:hover{background:rgba(16,185,129,.22);}
+  .btn-delete{background:rgba(239,68,68,.1);color:var(--red);}
+  .btn-delete:hover{background:rgba(239,68,68,.22);}
+  .empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
+  .empty-icon{font-size:44px;margin-bottom:10px;opacity:.4;}
+
+  /* Modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:800;opacity:0;pointer-events:none;transition:.2s;}
+  .modal-overlay.show{opacity:1;pointer-events:all;}
+  .modal{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;width:400px;max-width:95vw;}
+  .modal h3{font-size:17px;font-weight:700;margin-bottom:7px;}
+  .modal p{color:var(--muted);font-size:13px;margin-bottom:20px;}
+  .modal-btns{display:flex;gap:10px;justify-content:flex-end;}
+  .btn-cancel{padding:9px 18px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--text);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;}
+  .btn-del-confirm{padding:9px 18px;border-radius:8px;border:none;background:var(--red);color:#fff;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;}
+
+  /* Toast */
+  #toastContainer{position:fixed;bottom:22px;left:22px;z-index:9999;}
+  .toast{padding:11px 18px;border-radius:9px;font-size:13px;font-family:'Tajawal',sans-serif;margin-top:7px;animation:slideIn .3s ease;box-shadow:0 8px 25px rgba(0,0,0,.4);}
+  .toast-success{background:var(--green);color:#fff;}
+  .toast-error{background:var(--red);color:#fff;}
+  .toast-info{background:var(--accent);color:#000;font-weight:700;}
+  @keyframes slideIn{from{transform:translateX(-100%);opacity:0}to{transform:translateX(0);opacity:1}}
+  .loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  @media(max-width:1100px){.panels{grid-template-columns:1fr;}.stats-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:768px){.sidebar{display:none;}.main{margin-right:0;padding:14px;}.stats-grid{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<!-- ── Config Screen (إعداد كود firebaseConfig لمرة واحدة) ── -->
+<div id="configScreen">
+  <div class="config-box">
+    <h2>⚡ إعداد بيانات مشروع Firebase</h2>
+    <p>ألصق كود <code>firebaseConfig</code> الخاص بمشروعك (أو الكائن JSON) من إعدادات مشروعك في Firebase Console:</p>
+
+    <div class="form-group">
+      <label class="form-label">ألصق كود firebaseConfig هنا:</label>
+      <textarea class="form-control" id="cfgJsonInput" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "loco-d66c7.firebaseapp.com",
+  "databaseURL": "https://loco-d66c7-default-rtdb.firebaseio.com",
+  "projectId": "loco-d66c7",
+  "storageBucket": "loco-d66c7.appspot.com",
+  "messagingSenderId": "...",
+  "appId": "..."
+}'></textarea>
+    </div>
+    <button class="btn-primary" id="btnSaveConfig">💾 حفظ ومتابعة للدخول</button>
+  </div>
+</div>
+
+<!-- ── Login Screen (تسجيل دخول المشرف بالبريد وكلمة المرور) ── -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">[ APEX SECURITY ]</div>
+    <div class="login-sub">تسجيل دخول المشرف (Firebase Auth)</div>
+    <div class="form-group">
+      <label class="form-label">البريد الإلكتروني</label>
+      <input type="email" class="form-control" id="emailInput" placeholder="admin@example.com" dir="ltr">
+    </div>
+    <div class="form-group">
+      <label class="form-label">كلمة المرور</label>
+      <input type="password" class="form-control" id="pwdInput" placeholder="••••••••" dir="ltr">
+    </div>
+    <button class="btn-primary" id="btnLogin">🔓 دخول المشرف</button>
+    <div id="loginError">❌ بيانات الدخول غير صحيحة</div>
+    <div style="margin-top:16px;">
+      <button class="btn-sm" style="background:none; color:var(--muted); font-size:12px;" id="btnResetCfg">⚙️ تغيير إعدادات firebaseConfig</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── App ── -->
+<div id="app">
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-title">[ APEX ]</div>
+      <div class="brand-sub">إدارة الاشتراكات (Auth SDK)</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">القائمة الرئيسية</div>
+      <button class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard',this)">
+        <span>📊</span> لوحة التحكم
+      </button>
+      <button class="nav-item" id="nav-settings" onclick="showPage('settings',this)">
+        <span>⚙️</span> الإعدادات
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      <div class="fb-url" id="fbUrlDisplay"></div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;" id="fbUserDisplay"></div>
+      <button class="logout-btn" id="btnLogout">تسجيل الخروج</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Dashboard -->
+    <div id="page-dashboard">
+      <div class="page-header">
+        <h1>📊 لوحة التحكم</h1>
+        <p>إدارة اشتراكات مستخدمي APEX SECURITY في الوقت الفعلي</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card c-accent"><div class="stat-icon">👥</div><div class="stat-value" id="statTotal">—</div><div class="stat-label">إجمالي المستخدمين</div></div>
+        <div class="stat-card c-green"><div class="stat-icon">✅</div><div class="stat-value" id="statActive">—</div><div class="stat-label">نشط</div></div>
+        <div class="stat-card c-red"><div class="stat-icon">❌</div><div class="stat-value" id="statExpired">—</div><div class="stat-label">منتهي</div></div>
+        <div class="stat-card c-orange"><div class="stat-icon">⚠️</div><div class="stat-value" id="statSoon">—</div><div class="stat-label">ينتهي خلال 3 أيام</div></div>
+      </div>
+
+      <div class="panels">
+        <!-- Users List -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2>قائمة المشتركين</h2>
+            <button class="btn-sm btn-refresh" id="btnRefresh">🔄 تحديث</button>
+          </div>
+          <div class="panel-body">
+            <div class="search-bar">
+              <input id="searchInput" placeholder="🔍 ابحث بالاسم أو Device ID...">
+            </div>
+            <div class="filter-tabs">
+              <button class="filter-tab active" data-filter="all">الكل</button>
+              <button class="filter-tab" data-filter="active">نشط</button>
+              <button class="filter-tab" data-filter="expired">منتهي</button>
+              <button class="filter-tab" data-filter="soon">قريباً</button>
+            </div>
+            <div id="tableContainer">
+              <div class="empty-state"><div class="empty-icon">⏳</div><div>جاري التحميل...</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add User -->
+        <div class="panel">
+          <div class="panel-header"><h2>➕ تفعيل مستخدم</h2></div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label class="form-label">📱 Device ID (من شاشة APEX)</label>
+              <input class="form-control" id="newDeviceId" placeholder="مثال: a1b2c3d4e5f67890" dir="ltr">
+            </div>
+            <div class="form-group">
+              <label class="form-label">👤 اسم المستخدم (اختياري)</label>
+              <input class="form-control" id="newName" placeholder="مثال: أبو محمد">
+            </div>
+            <div class="form-label" style="margin-bottom:7px">⏱️ مدة الاشتراك</div>
+            <div class="duration-grid" id="addDurationGrid">
+              <div class="duration-btn" data-days="7">7 أيام</div>
+              <div class="duration-btn selected" data-days="30">30 يوم</div>
+              <div class="duration-btn" data-days="90">3 أشهر</div>
+              <div class="duration-btn" data-days="365">سنة كاملة</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">📅 أو تاريخ انتهاء مخصص</label>
+              <input class="form-control" id="customDate" type="date">
+            </div>
+            <div class="form-group">
+              <label class="form-label">📝 ملاحظة (اختياري)</label>
+              <input class="form-control" id="newNotes" placeholder="مثال: دفع 10,000 دينار">
+            </div>
+            <button class="btn-add" id="addBtn">✅ تفعيل الاشتراك</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Page -->
+    <div id="page-settings" style="display:none;">
+      <div class="page-header"><h1>⚙️ الإعدادات</h1><p>تعديل إعدادات الاتصال بمشروع Firebase</p></div>
+      <div class="panel" style="max-width:500px;">
+        <div class="panel-header"><h2>كود firebaseConfig المسجل</h2></div>
+        <div class="panel-body">
+          <textarea class="form-control" id="stJsonInput" style="height:140px;"></textarea>
+          <button class="btn-primary" id="btnUpdateCfg">💾 تحديث الإعدادات وإعادة التحميل</button>
+          <button class="btn-primary" style="margin-top:10px;background:linear-gradient(135deg,#f97316,#dc2626)" id="btnResetAll">🗑️ مسح الإعدادات بالكامل</button>
+        </div>
+      </div>
+
+      <div class="panel" style="max-width:500px; margin-top:18px;">
+        <div class="panel-header"><h2>🔐 تنبيه حماية قواعد Realtime Database</h2></div>
+        <div class="panel-body" style="font-size:13px;line-height:1.8;color:var(--muted)">
+          لكي يعمل تطبيق الأندرويد دون الحاجة لتسجيل دخول كل مستخدم، يجب أن تكون <b>القراءة (.read)</b> مسموحة، بينما <b>الكتابة (.write)</b> مقتصرة على حساب المشرف فقط (عبر الـ UID):
+          <pre style="background:var(--surface);padding:10px;border-radius:8px;margin-top:10px;color:var(--accent);direction:ltr;text-align:left;">{
+  "rules": {
+    ".read": true,
+    ".write": "auth != null && auth.uid === 'YOUR_ADMIN_UID'"
+  }
+}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal-overlay" id="delModal">
+  <div class="modal">
+    <h3>⚠️ تأكيد الحذف</h3>
+    <p id="delMsg">هل تريد حذف هذا المستخدم نهائياً؟</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModals()">إلغاء</button>
+      <button class="btn-del-confirm" id="btnConfirmDel">🗑️ حذف</button>
+    </div>
+  </div>
+</div>
+
+<!-- Renew Modal -->
+<div class="modal-overlay" id="renewModal">
+  <div class="modal">
+    <h3>🔄 تجديد الاشتراك</h3>
+    <p id="renewMsg">اختر مدة التجديد:</p>
+    <div class="duration-grid" id="renewDurationGrid">
+      <div class="duration-btn" data-renew-days="7">7 أيام</div>
+      <div class="duration-btn selected" data-renew-days="30">30 يوم</div>
+      <div class="duration-btn" data-renew-days="90">3 أشهر</div>
+      <div class="duration-btn" data-renew-days="365">سنة</div>
+    </div>
+    <div class="modal-btns" style="margin-top:14px">
+      <button class="btn-cancel" onclick="closeModals()">إلغاء</button>
+      <button class="btn-add" style="width:auto;padding:9px 22px" id="btnConfirmRenew">✅ تجديد</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<!-- ── Firebase Web SDK (ES6 Modules) ── -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const CFG_KEY = 'apex_fb_config_v3';
+let fbApp = null, fbAuth = null, fbDb = null;
+let users = {};
+let curFilter = 'all';
+let addDays = 30;
+let renewDays = 30;
+let delTarget = null;
+let renewTarget = null;
+let useCustomDate = false;
+
+// Helpers
+window.toast = function(msg, type='info'){
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.textContent = msg;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(()=>el.remove(), 3500);
+};
+
+window.copyText = function(t){
+  navigator.clipboard.writeText(t).then(()=>toast('تم نسخ: '+t.substring(0,20)+'…','info'));
+};
+
+window.closeModals = function(){
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('show'));
+  delTarget = null; renewTarget = null;
+};
+
+window.showPage = function(name, el){
+  document.querySelectorAll('.main > div').forEach(d=>d.style.display='none');
+  document.getElementById('page-'+name).style.display='block';
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(name === 'settings'){
+    const saved = localStorage.getItem(CFG_KEY) || '{}';
+    document.getElementById('stJsonInput').value = JSON.stringify(JSON.parse(saved), null, 2);
+  }
+};
+
+// Parse firebaseConfig JSON
+function parseFbConfig(txt){
+  try {
+    // If user pasted code with const firebaseConfig = {...}
+    let s = txt.trim();
+    if(s.includes('{')) {
+      s = s.substring(s.indexOf('{'), s.lastIndexOf('}') + 1);
+    }
+    const cfg = JSON.parse(s);
+    if(!cfg.databaseURL || !cfg.apiKey){
+      throw new Error('يجب أن يحتوي على apiKey و databaseURL على الأقل');
+    }
+    return cfg;
+  } catch(e){
+    toast('كود JSON غير صحيح: ' + e.message, 'error');
+    return null;
+  }
+}
+
+function initFirebase(cfg){
+  try {
+    fbApp = initializeApp(cfg);
+    fbAuth = getAuth(fbApp);
+    fbDb = getDatabase(fbApp);
+    document.getElementById('fbUrlDisplay').textContent = cfg.databaseURL;
+    return true;
+  } catch(e){
+    toast('فشل تشغيل Firebase: ' + e.message, 'error');
+    return false;
+  }
+}
+
+// Load users from DB
+async function loadUsers(){
+  document.getElementById('tableContainer').innerHTML =
+    '<div class="empty-state"><div class="empty-icon">⏳</div><div>جاري التحميل من Firebase...</div></div>';
+  try {
+    const snap = await get(ref(fbDb, 'users'));
+    users = snap.exists() ? snap.val() : {};
+    updateStats();
+    renderTable();
+  } catch(e){
+    document.getElementById('tableContainer').innerHTML =
+      `<div class="empty-state"><div class="empty-icon">❌</div><div>فشل جلب البيانات<br><small style="color:var(--red)">${e.message}</small></div></div>`;
+    toast('خطأ في قراءة القاعدة: ' + e.message, 'error');
+  }
+}
+
+function getStatus(u){
+  if(!u || u.status !== 'active') return 'expired';
+  const diff = (u.expires_at || 0) - Date.now();
+  if(diff <= 0) return 'expired';
+  if(diff <= 3 * 86400000) return 'soon';
+  return 'active';
+}
+
+function updateStats(){
+  const list = Object.values(users);
+  let a=0, e=0, s=0;
+  list.forEach(u => {
+    const st = getStatus(u);
+    if(st === 'active') a++;
+    else if(st === 'expired') e++;
+    else s++;
+  });
+  document.getElementById('statTotal').textContent = list.length;
+  document.getElementById('statActive').textContent = a;
+  document.getElementById('statExpired').textContent = e;
+  document.getElementById('statSoon').textContent = s;
+}
+
+function fmtDate(ts){
+  if(!ts) return '—';
+  return new Date(ts).toLocaleDateString('ar-IQ',{year:'numeric',month:'short',day:'numeric'});
+}
+
+function remDays(ts){
+  const d = ts - Date.now();
+  if(d <= 0) return 'انتهى الاشتراك';
+  const days = Math.ceil(d / 86400000);
+  return days === 1 ? 'يتبقى يوم واحد' : 'يتبقى ' + days + ' يوم';
+}
+
+function renderTable(){
+  const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  let entries = Object.entries(users).filter(([id, u]) => {
+    const st = getStatus(u);
+    if(curFilter !== 'all' && st !== curFilter) return false;
+    if(q && !id.toLowerCase().includes(q) && !(u.name || '').toLowerCase().includes(q)) return false;
+    return true;
+  });
+  entries.sort(([,a], [,b]) => {
+    const m = {active:0, soon:1, expired:2};
+    const d = m[getStatus(a)] - m[getStatus(b)];
+    if(d) return d;
+    return (b.expires_at || 0) - (a.expires_at || 0);
+  });
+  if(!entries.length){
+    document.getElementById('tableContainer').innerHTML =
+      '<div class="empty-state"><div class="empty-icon">🔍</div><div>لا يوجد مشتركين في هذا التصنيف</div></div>';
+    return;
+  }
+  const rows = entries.map(([id, u]) => {
+    const st = getStatus(u);
+    const badge = st === 'active'
+      ? '<span class="badge badge-active">✅ نشط</span>'
+      : st === 'soon'
+        ? '<span class="badge badge-soon">⚠️ قريباً</span>'
+        : '<span class="badge badge-expired">❌ منتهي</span>';
+    const exp = u.expires_at ? fmtDate(u.expires_at) : '—';
+    const rem = u.expires_at ? remDays(u.expires_at) : '';
+    const short = id.length > 14 ? id.substring(0,14) + '…' : id;
+    return `<tr>
+      <td><span class="device-id" onclick="copyText('${id}')" title="انقر للنسخ: ${id}">${short}</span></td>
+      <td>${u.name || '<span style="color:var(--muted)">—</span>'}</td>
+      <td>${badge}</td>
+      <td><span style="font-size:12px">${exp}</span><br><span style="color:var(--muted);font-size:11px">${rem}</span></td>
+      <td><div class="action-btns">
+        <button class="btn-icon btn-renew" data-id="${id}" title="تجديد">🔄</button>
+        <button class="btn-icon btn-delete" data-id="${id}" title="حذف">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tableContainer').innerHTML = `
+    <table class="users-table">
+      <thead><tr><th>Device ID</th><th>الاسم</th><th>الحالة</th><th>ينتهي</th><th>إجراء</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+
+  // Attach action button events
+  document.querySelectorAll('.btn-renew').forEach(b => {
+    b.addEventListener('click', () => openRenewModal(b.dataset.id));
+  });
+  document.querySelectorAll('.btn-delete').forEach(b => {
+    b.addEventListener('click', () => openDeleteModal(b.dataset.id));
+  });
+}
+
+// Add User
+async function addUser(){
+  const id = (document.getElementById('newDeviceId').value || '').trim();
+  const name = (document.getElementById('newName').value || '').trim();
+  const note = (document.getElementById('newNotes').value || '').trim();
+  const cust = document.getElementById('customDate').value;
+  if(!id){ toast('أدخل Device ID', 'error'); return; }
+  if(id.length < 6){ toast('Device ID قصير جداً', 'error'); return; }
+
+  const exp = useCustomDate && cust
+    ? new Date(cust).setHours(23,59,59,999)
+    : Date.now() + addDays * 86400000;
+  
+  const btn = document.getElementById('addBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="loader"></span> جاري التفعيل...';
+  try {
+    const data = {status:'active', expires_at:exp, created_at:Date.now()};
+    if(name) data.name = name;
+    if(note) data.notes = note;
+    await set(ref(fbDb, 'users/' + id), data);
+    users[id] = data;
+    updateStats(); renderTable();
+    document.getElementById('newDeviceId').value = '';
+    document.getElementById('newName').value = '';
+    document.getElementById('newNotes').value = '';
+    document.getElementById('customDate').value = '';
+    useCustomDate = false;
+    toast('✅ تم التفعيل! ينتهي: ' + fmtDate(exp), 'success');
+  } catch(e){
+    toast('❌ فشل التفعيل (تأكد من تسجيل دخول الأدمن): ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '✅ تفعيل الاشتراك';
+  }
+}
+
+// Renew User
+function openRenewModal(id){
+  renewTarget = id;
+  renewDays = 30;
+  document.querySelectorAll('#renewDurationGrid .duration-btn').forEach((b,i)=>b.classList.toggle('selected',i===1));
+  document.getElementById('renewMsg').textContent =
+    'تجديد اشتراك: ' + (users[id]?.name || id.substring(0,16)+'…');
+  document.getElementById('renewModal').classList.add('show');
+}
+
+async function confirmRenew(){
+  if(!renewTarget) return;
+  try {
+    const u = users[renewTarget] || {};
+    const base = Math.max(Date.now(), u.expires_at || 0);
+    const newExp = base + renewDays * 86400000;
+    const updated = {...u, status:'active', expires_at:newExp};
+    await set(ref(fbDb, 'users/' + renewTarget), updated);
+    users[renewTarget] = updated;
+    updateStats(); renderTable();
+    toast('✅ تم التجديد! ينتهي: ' + fmtDate(newExp), 'success');
+  } catch(e){
+    toast('فشل التجديد: ' + e.message, 'error');
+  }
+  closeModals();
+}
+
+// Delete User
+function openDeleteModal(id){
+  delTarget = id;
+  document.getElementById('delMsg').textContent =
+    'حذف "' + (users[id]?.name || id.substring(0,16)+'…') + '" نهائياً؟';
+  document.getElementById('delModal').classList.add('show');
+}
+
+async function confirmDelete(){
+  if(!delTarget) return;
+  try {
+    await remove(ref(fbDb, 'users/' + delTarget));
+    delete users[delTarget];
+    updateStats(); renderTable();
+    toast('تم الحذف بنجاح', 'success');
+  } catch(e){
+    toast('فشل الحذف: ' + e.message, 'error');
+  }
+  closeModals();
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+  // Check localStorage config
+  const savedCfg = localStorage.getItem(CFG_KEY);
+  if(savedCfg){
+    const cfgObj = JSON.parse(savedCfg);
+    if(initFirebase(cfgObj)){
+      document.getElementById('configScreen').classList.add('hidden');
+      document.getElementById('loginScreen').classList.add('show');
+      
+      // Check auth state
+      onAuthStateChanged(fbAuth, (user) => {
+        if(user){
+          document.getElementById('loginScreen').classList.remove('show');
+          document.getElementById('app').classList.add('show');
+          document.getElementById('fbUserDisplay').textContent = user.email;
+          loadUsers();
+        } else {
+          document.getElementById('app').classList.remove('show');
+          document.getElementById('loginScreen').classList.add('show');
+        }
+      });
+    }
+  }
+
+  // Save config button
+  document.getElementById('btnSaveConfig').addEventListener('click', () => {
+    const txt = document.getElementById('cfgJsonInput').value;
+    const cfgObj = parseFbConfig(txt);
+    if(cfgObj){
+      localStorage.setItem(CFG_KEY, JSON.stringify(cfgObj));
+      location.reload();
+    }
+  });
+
+  // Login button
+  document.getElementById('btnLogin').addEventListener('click', async () => {
+    const email = document.getElementById('emailInput').value.trim();
+    const pwd = document.getElementById('pwdInput').value.trim();
+    if(!email || !pwd){ toast('أدخل البريد وكلمة المرور', 'error'); return; }
+    try {
+      await signInWithEmailAndPassword(fbAuth, email, pwd);
+      document.getElementById('loginError').style.display = 'none';
+    } catch(e){
+      document.getElementById('loginError').style.display = 'block';
+    }
+  });
+
+  document.getElementById('pwdInput').addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') document.getElementById('btnLogin').click();
+  });
+
+  // Logout button
+  document.getElementById('btnLogout').addEventListener('click', () => {
+    signOut(fbAuth);
+  });
+
+  // Reset config
+  document.getElementById('btnResetCfg').addEventListener('click', () => {
+    if(confirm('هل تريد إعادة تعيين كود firebaseConfig؟')){
+      localStorage.removeItem(CFG_KEY);
+      location.reload();
+    }
+  });
+
+  document.getElementById('btnResetAll').addEventListener('click', () => {
+    if(confirm('هل تريد مسح الإعدادات بالكامل؟')){
+      localStorage.removeItem(CFG_KEY);
+      location.reload();
+    }
+  });
+
+  document.getElementById('btnUpdateCfg').addEventListener('click', () => {
+    const txt = document.getElementById('stJsonInput').value;
+    const cfgObj = parseFbConfig(txt);
+    if(cfgObj){
+      localStorage.setItem(CFG_KEY, JSON.stringify(cfgObj));
+      location.reload();
+    }
+  });
+
+  // Filter buttons
+  document.querySelectorAll('.filter-tab').forEach(b => {
+    b.addEventListener('click', () => {
+      curFilter = b.dataset.filter;
+      document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+      b.classList.add('active');
+      renderTable();
+    });
+  });
+
+  // Search input
+  document.getElementById('searchInput').addEventListener('input', renderTable);
+  document.getElementById('btnRefresh').addEventListener('click', loadUsers);
+
+  // Duration buttons
+  document.querySelectorAll('#addDurationGrid .duration-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      addDays = parseInt(b.dataset.days);
+      useCustomDate = false;
+      document.getElementById('customDate').value = '';
+      document.querySelectorAll('#addDurationGrid .duration-btn').forEach(x=>x.classList.remove('selected'));
+      b.classList.add('selected');
+    });
+  });
+
+  document.getElementById('customDate').addEventListener('change', () => {
+    if(document.getElementById('customDate').value){
+      useCustomDate = true;
+      document.querySelectorAll('#addDurationGrid .duration-btn').forEach(x=>x.classList.remove('selected'));
+    }
+  });
+
+  // Add User Button
+  document.getElementById('addBtn').addEventListener('click', addUser);
+
+  // Renew buttons inside modal
+  document.querySelectorAll('#renewDurationGrid .duration-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      renewDays = parseInt(b.dataset.renewDays);
+      document.querySelectorAll('#renewDurationGrid .duration-btn').forEach(x=>x.classList.remove('selected'));
+      b.classList.add('selected');
+    });
+  });
+
+  document.getElementById('btnConfirmRenew').addEventListener('click', confirmRenew);
+  document.getElementById('btnConfirmDel').addEventListener('click', confirmDelete);
+});
+</script>
+</body>
+</html>
