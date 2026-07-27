@@ -619,27 +619,35 @@ async function confirmDelete(){
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-  // Check localStorage config
+  const DEFAULT_CFG = {
+    apiKey: "AIzaSyA_Xtxlq5ar7uerPCx1yP6rpKAgOT7bdJo",
+    authDomain: "loco-d66c7.firebaseapp.com",
+    databaseURL: "https://loco-d66c7-default-rtdb.firebaseio.com",
+    projectId: "loco-d66c7",
+    storageBucket: "loco-d66c7.firebasestorage.app",
+    messagingSenderId: "81915563388",
+    appId: "1:81915563388:web:b44d61b9433a24080b68f9",
+    measurementId: "G-2VPYHC6Z37"
+  };
+
   const savedCfg = localStorage.getItem(CFG_KEY);
-  if(savedCfg){
-    const cfgObj = JSON.parse(savedCfg);
-    if(initFirebase(cfgObj)){
-      document.getElementById('configScreen').classList.add('hidden');
-      document.getElementById('loginScreen').classList.add('show');
-      
-      // Check auth state
-      onAuthStateChanged(fbAuth, (user) => {
-        if(user){
-          document.getElementById('loginScreen').classList.remove('show');
-          document.getElementById('app').classList.add('show');
-          document.getElementById('fbUserDisplay').textContent = user.email;
-          loadUsers();
-        } else {
-          document.getElementById('app').classList.remove('show');
-          document.getElementById('loginScreen').classList.add('show');
-        }
-      });
-    }
+  const cfgObj = savedCfg ? JSON.parse(savedCfg) : DEFAULT_CFG;
+  
+  if(initFirebase(cfgObj)){
+    document.getElementById('configScreen').classList.add('hidden');
+    document.getElementById('loginScreen').classList.add('show');
+    
+    onAuthStateChanged(fbAuth, (user) => {
+      if(user){
+        document.getElementById('loginScreen').classList.remove('show');
+        document.getElementById('app').classList.add('show');
+        document.getElementById('fbUserDisplay').textContent = user.email;
+        loadUsers();
+      } else {
+        document.getElementById('app').classList.remove('show');
+        document.getElementById('loginScreen').classList.add('show');
+      }
+    });
   }
 
   // Save config button
