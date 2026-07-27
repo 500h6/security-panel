@@ -148,8 +148,40 @@
   .loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
   @keyframes spin{to{transform:rotate(360deg)}}
 
-  @media(max-width:1100px){.panels{grid-template-columns:1fr;}.stats-grid{grid-template-columns:repeat(2,1fr);}}
-  @media(max-width:768px){.sidebar{display:none;}.main{margin-right:0;padding:14px;}.stats-grid{grid-template-columns:repeat(2,1fr);}}
+  /* ── Mobile Top & Bottom Bars ── */
+  .mobile-topbar{display:none;position:fixed;top:0;left:0;right:0;height:58px;background:var(--surface);border-bottom:1px solid var(--border);z-index:200;padding:0 16px;align-items:center;justify-content:space-between;box-shadow:0 4px 15px rgba(0,0,0,.3);}
+  .mobile-brand{display:flex;align-items:center;gap:8px;font-size:16px;}
+  .mobile-user-email{font-size:12px;color:var(--muted);background:rgba(255,255,255,.05);padding:3px 10px;border-radius:12px;}
+  .mobile-logout-btn{width:36px;height:36px;border-radius:8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:var(--red);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:.2s;}
+  .mobile-logout-btn:active{background:rgba(239,68,68,.3);}
+  
+  .mobile-bottomnav{display:none;position:fixed;bottom:0;left:0;right:0;height:66px;background:var(--surface);border-top:1px solid var(--border);z-index:200;padding:6px 14px;justify-content:space-around;box-shadow:0 -4px 20px rgba(0,0,0,.4);}
+  .mobile-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:600;padding:6px 12px;border-radius:12px;cursor:pointer;transition:.15s;flex:1;}
+  .mobile-nav-item.active{color:var(--accent);background:rgba(0,229,255,.1);font-weight:700;}
+  .mobile-nav-item span:first-child{font-size:20px;}
+
+  #tableContainer{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+  @media(max-width:1100px){
+    .panels{grid-template-columns:1fr;}
+    .stats-grid{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:768px){
+    .sidebar{display:none;}
+    .mobile-topbar, .mobile-bottomnav{display:flex;}
+    .main{margin-right:0;padding:70px 12px 85px 12px;}
+    .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+    .stat-card{padding:14px;}
+    .stat-value{font-size:24px;}
+    .stat-icon{font-size:18px;margin-bottom:6px;}
+    .config-box, .login-box, .modal{padding:26px 18px;width:94vw;}
+    .form-control, input.form-control, select.form-control{font-size:16px;padding:12px;}
+    .duration-btn{padding:11px;font-size:14px;}
+    .users-table th, .users-table td{padding:11px 9px;font-size:12px;white-space:nowrap;}
+    .action-btns{justify-content:flex-start;}
+    #toastContainer{bottom:82px;left:14px;right:14px;}
+    .toast{text-align:center;}
+  }
 </style>
 </head>
 <body>
@@ -199,6 +231,30 @@
 
 <!-- ── App ── -->
 <div id="app">
+  <!-- ── Mobile Top Header ── -->
+  <div class="mobile-topbar">
+    <div class="mobile-brand">
+      <span style="color:var(--accent);font-weight:800">[ APEX ]</span>
+      <span style="font-size:11px;color:var(--muted)">إدارة المشتركين</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="mobile-user-email" id="fbUserDisplayMobile"></span>
+      <button class="mobile-logout-btn" id="btnLogoutMobile" title="تسجيل الخروج">🚪</button>
+    </div>
+  </div>
+
+  <!-- ── Mobile Bottom Navigation Bar ── -->
+  <div class="mobile-bottomnav">
+    <button class="mobile-nav-item active" id="mob-nav-dashboard" onclick="showPage('dashboard',this)">
+      <span>📊</span>
+      <span>الرئيسية</span>
+    </button>
+    <button class="mobile-nav-item" id="mob-nav-settings" onclick="showPage('settings',this)">
+      <span>⚙️</span>
+      <span>الإعدادات</span>
+    </button>
+  </div>
+
   <div class="sidebar">
     <div class="sidebar-brand">
       <div class="brand-title">[ APEX ]</div>
@@ -388,8 +444,9 @@ window.closeModals = function(){
 window.showPage = function(name, el){
   document.querySelectorAll('.main > div').forEach(d=>d.style.display='none');
   document.getElementById('page-'+name).style.display='block';
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  if(el) el.classList.add('active');
+  document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-'+name)?.classList.add('active');
+  document.getElementById('mob-nav-'+name)?.classList.add('active');
   if(name === 'settings'){
     const saved = localStorage.getItem(CFG_KEY) || '{}';
     document.getElementById('stJsonInput').value = JSON.stringify(JSON.parse(saved), null, 2);
@@ -642,6 +699,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loginScreen').classList.remove('show');
         document.getElementById('app').classList.add('show');
         document.getElementById('fbUserDisplay').textContent = user.email;
+        const mobUser = document.getElementById('fbUserDisplayMobile');
+        if(mobUser) mobUser.textContent = user.email.split('@')[0];
         loadUsers();
       } else {
         document.getElementById('app').classList.remove('show');
@@ -678,9 +737,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Logout button
-  document.getElementById('btnLogout').addEventListener('click', () => {
-    signOut(fbAuth);
-  });
+  const doLogout = () => signOut(fbAuth);
+  document.getElementById('btnLogout').addEventListener('click', doLogout);
+  document.getElementById('btnLogoutMobile')?.addEventListener('click', doLogout);
 
   // Reset config
   document.getElementById('btnResetCfg').addEventListener('click', () => {
