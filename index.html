@@ -3,44 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>APEX SECURITY — لوحة التحكم (Firebase Auth)</title>
+<title>APEX COMMANDER — لوحة التحكم</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#070b14; --surface:#0d1526; --card:#111827; --border:#1e2d4a;
-    --accent:#00e5ff; --green:#10b981; --red:#ef4444; --orange:#f97316;
-    --text:#e2e8f0; --muted:#64748b; --glow:0 0 20px rgba(0,229,255,.15);
-  }
+  :root{--bg:#070b14;--surface:#0d1526;--card:#111827;--border:#1e2d4a;--accent:#00e5ff;--green:#10b981;--red:#ef4444;--orange:#f97316;--yellow:#eab308;--purple:#a855f7;--text:#e2e8f0;--muted:#64748b;--glow:0 0 20px rgba(0,229,255,.15);}
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-  /* Config */
-  #configScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0d1526,#070b14);z-index:1000;}
-  #configScreen.hidden{display:none;}
-  .config-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px;width:560px;max-width:95vw;}
-  .config-box h2{font-size:20px;font-weight:800;color:var(--accent);margin-bottom:6px;}
-  .config-box>p{color:var(--muted);font-size:13px;margin-bottom:20px;line-height:1.7;}
-  .step{display:flex;gap:12px;margin-bottom:14px;}
-  .step-num{width:26px;height:26px;border-radius:50%;flex-shrink:0;background:rgba(0,229,255,.12);border:1px solid var(--accent);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
-  .step-text{font-size:13px;color:var(--muted);line-height:1.6;}
-  .step-text a{color:var(--accent);}
-  .step-text code{background:var(--surface);padding:1px 5px;border-radius:4px;font-size:11px;color:var(--accent);}
-
-  /* Login */
-  #loginScreen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0d1526,#070b14);z-index:900;transition:opacity .3s;}
+  /* ── Login ── */
+  #loginScreen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0d1526,#070b14);z-index:900;}
   #loginScreen.show{display:flex;}
-  #loginScreen.hidden{opacity:0;pointer-events:none;}
-  .login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:44px 38px;width:380px;text-align:center;box-shadow:var(--glow),0 25px 50px rgba(0,0,0,.5);}
-  .login-logo{font-size:24px;font-weight:800;color:var(--accent);letter-spacing:2px;margin-bottom:4px;text-shadow:0 0 30px rgba(0,229,255,.4);}
+  .login-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:44px 38px;width:400px;text-align:center;box-shadow:var(--glow),0 25px 50px rgba(0,0,0,.5);}
+  .login-logo{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:3px;margin-bottom:6px;}
+  .login-title{font-size:26px;font-weight:800;color:var(--accent);margin-bottom:4px;text-shadow:0 0 30px rgba(0,229,255,.4);}
   .login-sub{color:var(--muted);font-size:13px;margin-bottom:28px;}
   #loginError{color:var(--red);font-size:13px;margin-top:10px;display:none;}
 
-  /* App */
+  /* ── App ── */
   #app{display:none;min-height:100vh;}
   #app.show{display:block;}
 
-  /* Sidebar */
-  .sidebar{position:fixed;top:0;right:0;width:250px;height:100vh;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
+  /* ── Sidebar ── */
+  .sidebar{position:fixed;top:0;right:0;width:255px;height:100vh;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
   .sidebar-brand{padding:22px 18px;border-bottom:1px solid var(--border);}
   .brand-title{font-size:17px;font-weight:800;color:var(--accent);letter-spacing:1px;}
   .brand-sub{font-size:11px;color:var(--muted);margin-top:2px;}
@@ -50,19 +34,29 @@
   .nav-item:hover{background:rgba(255,255,255,.05);color:var(--text);}
   .nav-item.active{background:rgba(0,229,255,.1);color:var(--accent);}
   .sidebar-footer{margin-top:auto;padding:14px 18px;border-top:1px solid var(--border);}
-  .sidebar-footer .fb-url{font-size:10px;word-break:break-all;color:var(--accent);margin-bottom:8px;}
+  .fb-url{font-size:10px;word-break:break-all;color:var(--accent);margin-bottom:8px;}
   .logout-btn{padding:8px 12px;border-radius:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:var(--red);font-size:13px;cursor:pointer;width:100%;font-family:'Tajawal',sans-serif;transition:.2s;}
   .logout-btn:hover{background:rgba(239,68,68,.2);}
 
-  /* Main */
-  .main{margin-right:250px;padding:28px;min-height:100vh;}
+  /* ── Mobile Bars ── */
+  .mobile-topbar{display:none;position:fixed;top:0;left:0;right:0;height:58px;background:var(--surface);border-bottom:1px solid var(--border);z-index:200;padding:0 16px;align-items:center;justify-content:space-between;box-shadow:0 4px 15px rgba(0,0,0,.3);}
+  .mobile-brand{display:flex;align-items:center;gap:8px;font-size:16px;}
+  .mobile-user-email{font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);padding:3px 10px;border-radius:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .mobile-logout-btn{width:36px;height:36px;border-radius:8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:var(--red);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:.2s;}
+  .mobile-bottomnav{display:none;position:fixed;bottom:0;left:0;right:0;height:66px;background:var(--surface);border-top:1px solid var(--border);z-index:200;padding:6px 14px;justify-content:space-around;box-shadow:0 -4px 20px rgba(0,0,0,.4);}
+  .mobile-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:600;padding:6px 12px;border-radius:12px;cursor:pointer;transition:.15s;flex:1;}
+  .mobile-nav-item.active{color:var(--accent);background:rgba(0,229,255,.1);font-weight:700;}
+  .mobile-nav-item span:first-child{font-size:20px;}
+
+  /* ── Main ── */
+  .main{margin-right:255px;padding:28px;min-height:100vh;}
   .page-header{margin-bottom:24px;}
   .page-header h1{font-size:22px;font-weight:800;}
   .page-header p{color:var(--muted);font-size:13px;margin-top:3px;}
 
-  /* Stats */
+  /* ── Stats ── */
   .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
-  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:18px;position:relative;overflow:hidden;}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:18px;}
   .stat-icon{font-size:22px;margin-bottom:10px;}
   .stat-value{font-size:30px;font-weight:800;}
   .stat-label{font-size:12px;color:var(--muted);margin-top:3px;}
@@ -70,26 +64,27 @@
   .stat-card.c-green .stat-value{color:var(--green);}
   .stat-card.c-red .stat-value{color:var(--red);}
   .stat-card.c-orange .stat-value{color:var(--orange);}
+  .stat-card.c-purple .stat-value{color:var(--purple);}
 
-  /* Panels */
-  .panels{display:grid;grid-template-columns:1fr 360px;gap:20px;}
+  /* ── Panels ── */
+  .panels{display:grid;grid-template-columns:1fr 380px;gap:20px;}
   .panel{background:var(--card);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
   .panel-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
   .panel-header h2{font-size:15px;font-weight:700;}
   .panel-body{padding:20px;}
 
-  /* Form */
-  .form-group{margin-bottom:14px; text-align:right;}
+  /* ── Form ── */
+  .form-group{margin-bottom:14px;}
   .form-label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:500;}
   .form-control{width:100%;padding:10px 13px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;transition:.2s;text-align:right;}
   .form-control:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,.07);}
-  textarea.form-control{min-height:90px; font-family:monospace; font-size:12px; direction:ltr; text-align:left;}
+  select.form-control option{background:var(--card);}
   .duration-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:14px;}
   .duration-btn{padding:9px;border-radius:8px;text-align:center;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:.2s;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:500;}
   .duration-btn:hover{border-color:var(--accent);color:var(--accent);}
   .duration-btn.selected{border-color:var(--accent);background:rgba(0,229,255,.1);color:var(--accent);}
 
-  /* Buttons */
+  /* ── Buttons ── */
   .btn-primary{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),#0891b2);border:none;border-radius:9px;color:#000;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;margin-top:6px;}
   .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,229,255,.3);}
   .btn-add{width:100%;padding:12px;background:linear-gradient(135deg,var(--green),#059669);border:none;border-radius:9px;color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;}
@@ -99,7 +94,7 @@
   .btn-refresh{background:rgba(0,229,255,.1);color:var(--accent);}
   .btn-refresh:hover{background:rgba(0,229,255,.2);}
 
-  /* Search/Filter */
+  /* ── Search / Filter ── */
   .search-bar{margin-bottom:12px;}
   .search-bar input{width:100%;padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;text-align:right;}
   .search-bar input:focus{border-color:var(--accent);}
@@ -107,38 +102,50 @@
   .filter-tab{padding:5px 14px;border-radius:20px;font-size:12px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;transition:.15s;font-family:'Tajawal',sans-serif;}
   .filter-tab.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;}
 
-  /* Table */
-  .users-table{width:100%;border-collapse:collapse;}
-  .users-table th{padding:9px 13px;text-align:right;font-size:11px;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);font-weight:600;}
-  .users-table td{padding:12px 13px;border-bottom:1px solid rgba(30,45,74,.4);font-size:13px;vertical-align:middle;}
+  /* ── Table ── */
+  #tableContainer{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .users-table{width:100%;border-collapse:collapse;min-width:620px;}
+  .users-table th{padding:9px 12px;text-align:right;font-size:11px;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border);font-weight:600;}
+  .users-table td{padding:11px 12px;border-bottom:1px solid rgba(30,45,74,.4);font-size:13px;vertical-align:middle;}
   .users-table tr:last-child td{border-bottom:none;}
   .users-table tr:hover td{background:rgba(255,255,255,.02);}
-  .device-id{font-family:monospace;font-size:12px;color:var(--accent);cursor:pointer;}
+  .device-id{font-family:monospace;font-size:11px;color:var(--accent);cursor:pointer;}
   .device-id:hover{text-decoration:underline;}
-  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+  .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;}
   .badge-active{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3);}
   .badge-expired{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);}
   .badge-soon{background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3);}
+  .badge-blocked{background:rgba(239,68,68,.25);color:#fff;border:1px solid var(--red);}
+  .badge-paused{background:rgba(168,85,247,.15);color:var(--purple);border:1px solid rgba(168,85,247,.3);}
   .action-btns{display:flex;gap:5px;justify-content:flex-end;}
   .btn-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;transition:.15s;font-size:14px;}
   .btn-renew{background:rgba(16,185,129,.1);color:var(--green);}
   .btn-renew:hover{background:rgba(16,185,129,.22);}
-  .btn-delete{background:rgba(239,68,68,.1);color:var(--red);}
-  .btn-delete:hover{background:rgba(239,68,68,.22);}
+  .btn-block{background:rgba(239,68,68,.1);color:var(--red);}
+  .btn-block:hover{background:rgba(239,68,68,.22);}
+  .btn-pause{background:rgba(168,85,247,.1);color:var(--purple);}
+  .btn-pause:hover{background:rgba(168,85,247,.22);}
+  .btn-delete{background:rgba(100,116,139,.1);color:var(--muted);}
+  .btn-delete:hover{background:rgba(100,116,139,.22);}
   .empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
   .empty-icon{font-size:44px;margin-bottom:10px;opacity:.4;}
 
-  /* Modal */
+  /* ── Broadcast Panel ── */
+  .msg-list{max-height:140px;overflow-y:auto;margin-bottom:10px;}
+  .msg-item{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--surface);border-radius:7px;margin-bottom:5px;font-size:13px;}
+  .msg-item button{background:none;border:none;color:var(--red);cursor:pointer;font-size:15px;}
+
+  /* ── Modals ── */
   .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:800;opacity:0;pointer-events:none;transition:.2s;}
   .modal-overlay.show{opacity:1;pointer-events:all;}
-  .modal{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;width:400px;max-width:95vw;}
+  .modal{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;width:420px;max-width:95vw;}
   .modal h3{font-size:17px;font-weight:700;margin-bottom:7px;}
   .modal p{color:var(--muted);font-size:13px;margin-bottom:20px;}
   .modal-btns{display:flex;gap:10px;justify-content:flex-end;}
   .btn-cancel{padding:9px 18px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--text);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;}
   .btn-del-confirm{padding:9px 18px;border-radius:8px;border:none;background:var(--red);color:#fff;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;}
 
-  /* Toast */
+  /* ── Toast ── */
   #toastContainer{position:fixed;bottom:22px;left:22px;z-index:9999;}
   .toast{padding:11px 18px;border-radius:9px;font-size:13px;font-family:'Tajawal',sans-serif;margin-top:7px;animation:slideIn .3s ease;box-shadow:0 8px 25px rgba(0,0,0,.4);}
   .toast-success{background:var(--green);color:#fff;}
@@ -148,37 +155,19 @@
   .loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
   @keyframes spin{to{transform:rotate(360deg)}}
 
-  /* ── Mobile Top & Bottom Bars ── */
-  .mobile-topbar{display:none;position:fixed;top:0;left:0;right:0;height:58px;background:var(--surface);border-bottom:1px solid var(--border);z-index:200;padding:0 16px;align-items:center;justify-content:space-between;box-shadow:0 4px 15px rgba(0,0,0,.3);}
-  .mobile-brand{display:flex;align-items:center;gap:8px;font-size:16px;}
-  .mobile-user-email{font-size:12px;color:var(--muted);background:rgba(255,255,255,.05);padding:3px 10px;border-radius:12px;}
-  .mobile-logout-btn{width:36px;height:36px;border-radius:8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:var(--red);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:.2s;}
-  .mobile-logout-btn:active{background:rgba(239,68,68,.3);}
-  
-  .mobile-bottomnav{display:none;position:fixed;bottom:0;left:0;right:0;height:66px;background:var(--surface);border-top:1px solid var(--border);z-index:200;padding:6px 14px;justify-content:space-around;box-shadow:0 -4px 20px rgba(0,0,0,.4);}
-  .mobile-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:600;padding:6px 12px;border-radius:12px;cursor:pointer;transition:.15s;flex:1;}
-  .mobile-nav-item.active{color:var(--accent);background:rgba(0,229,255,.1);font-weight:700;}
-  .mobile-nav-item span:first-child{font-size:20px;}
-
-  #tableContainer{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-
-  @media(max-width:1100px){
-    .panels{grid-template-columns:1fr;}
-    .stats-grid{grid-template-columns:repeat(2,1fr);}
-  }
+  /* ── Responsive ── */
+  @media(max-width:1200px){.panels{grid-template-columns:1fr;}.stats-grid{grid-template-columns:repeat(2,1fr);}}
   @media(max-width:768px){
     .sidebar{display:none;}
-    .mobile-topbar, .mobile-bottomnav{display:flex;}
+    .mobile-topbar,.mobile-bottomnav{display:flex;}
     .main{margin-right:0;padding:70px 12px 85px 12px;}
     .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
     .stat-card{padding:14px;}
     .stat-value{font-size:24px;}
     .stat-icon{font-size:18px;margin-bottom:6px;}
-    .config-box, .login-box, .modal{padding:26px 18px;width:94vw;}
-    .form-control, input.form-control, select.form-control{font-size:16px;padding:12px;}
+    .login-box,.modal{padding:26px 18px;width:94vw;}
+    .form-control,input.form-control,select.form-control{font-size:16px;padding:12px;}
     .duration-btn{padding:11px;font-size:14px;}
-    .users-table th, .users-table td{padding:11px 9px;font-size:12px;white-space:nowrap;}
-    .action-btns{justify-content:flex-start;}
     #toastContainer{bottom:82px;left:14px;right:14px;}
     .toast{text-align:center;}
   }
@@ -186,33 +175,12 @@
 </head>
 <body>
 
-<!-- ── Config Screen (إعداد كود firebaseConfig لمرة واحدة) ── -->
-<div id="configScreen">
-  <div class="config-box">
-    <h2>⚡ إعداد بيانات مشروع Firebase</h2>
-    <p>ألصق كود <code>firebaseConfig</code> الخاص بمشروعك (أو الكائن JSON) من إعدادات مشروعك في Firebase Console:</p>
-
-    <div class="form-group">
-      <label class="form-label">ألصق كود firebaseConfig هنا:</label>
-      <textarea class="form-control" id="cfgJsonInput" placeholder='{
-  "apiKey": "AIzaSy...",
-  "authDomain": "loco-d66c7.firebaseapp.com",
-  "databaseURL": "https://loco-d66c7-default-rtdb.firebaseio.com",
-  "projectId": "loco-d66c7",
-  "storageBucket": "loco-d66c7.appspot.com",
-  "messagingSenderId": "...",
-  "appId": "..."
-}'></textarea>
-    </div>
-    <button class="btn-primary" id="btnSaveConfig">💾 حفظ ومتابعة للدخول</button>
-  </div>
-</div>
-
-<!-- ── Login Screen (تسجيل دخول المشرف بالبريد وكلمة المرور) ── -->
+<!-- ── Login ── -->
 <div id="loginScreen">
   <div class="login-box">
-    <div class="login-logo">[ APEX SECURITY ]</div>
-    <div class="login-sub">تسجيل دخول المشرف (Firebase Auth)</div>
+    <div class="login-logo">APEX SECURITY SYSTEMS</div>
+    <div class="login-title">🛡️ APEX COMMANDER</div>
+    <div class="login-sub">لوحة تحكم المشرف — Firebase Auth</div>
     <div class="form-group">
       <label class="form-label">البريد الإلكتروني</label>
       <input type="email" class="form-control" id="emailInput" placeholder="admin@example.com" dir="ltr">
@@ -223,18 +191,15 @@
     </div>
     <button class="btn-primary" id="btnLogin">🔓 دخول المشرف</button>
     <div id="loginError">❌ بيانات الدخول غير صحيحة</div>
-    <div style="margin-top:16px;">
-      <button class="btn-sm" style="background:none; color:var(--muted); font-size:12px;" id="btnResetCfg">⚙️ تغيير إعدادات firebaseConfig</button>
-    </div>
   </div>
 </div>
 
 <!-- ── App ── -->
 <div id="app">
-  <!-- ── Mobile Top Header ── -->
+  <!-- Mobile Top Header -->
   <div class="mobile-topbar">
     <div class="mobile-brand">
-      <span style="color:var(--accent);font-weight:800">[ APEX ]</span>
+      <span style="color:var(--accent);font-weight:800">🛡️ APEX</span>
       <span style="font-size:11px;color:var(--muted)">إدارة المشتركين</span>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
@@ -242,32 +207,23 @@
       <button class="mobile-logout-btn" id="btnLogoutMobile" title="تسجيل الخروج">🚪</button>
     </div>
   </div>
-
-  <!-- ── Mobile Bottom Navigation Bar ── -->
+  <!-- Mobile Bottom Nav -->
   <div class="mobile-bottomnav">
-    <button class="mobile-nav-item active" id="mob-nav-dashboard" onclick="showPage('dashboard',this)">
-      <span>📊</span>
-      <span>الرئيسية</span>
-    </button>
-    <button class="mobile-nav-item" id="mob-nav-settings" onclick="showPage('settings',this)">
-      <span>⚙️</span>
-      <span>الإعدادات</span>
-    </button>
+    <button class="mobile-nav-item active" id="mob-nav-dashboard" onclick="showPage('dashboard',this)"><span>📊</span><span>الرئيسية</span></button>
+    <button class="mobile-nav-item" id="mob-nav-broadcast" onclick="showPage('broadcast',this)"><span>📣</span><span>البث</span></button>
+    <button class="mobile-nav-item" id="mob-nav-settings" onclick="showPage('settings',this)"><span>⚙️</span><span>الإعدادات</span></button>
   </div>
 
   <div class="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-title">[ APEX ]</div>
-      <div class="brand-sub">إدارة الاشتراكات (Auth SDK)</div>
+      <div class="brand-title">🛡️ APEX COMMANDER</div>
+      <div class="brand-sub">إدارة الاشتراكات المتقدمة</div>
     </div>
     <div class="nav-section">
       <div class="nav-label">القائمة الرئيسية</div>
-      <button class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard',this)">
-        <span>📊</span> لوحة التحكم
-      </button>
-      <button class="nav-item" id="nav-settings" onclick="showPage('settings',this)">
-        <span>⚙️</span> الإعدادات
-      </button>
+      <button class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard',this)"><span>📊</span> لوحة التحكم</button>
+      <button class="nav-item" id="nav-broadcast" onclick="showPage('broadcast',this)"><span>📣</span> البث الإداري</button>
+      <button class="nav-item" id="nav-settings" onclick="showPage('settings',this)"><span>⚙️</span> الإعدادات</button>
     </div>
     <div class="sidebar-footer">
       <div class="fb-url" id="fbUrlDisplay"></div>
@@ -277,36 +233,38 @@
   </div>
 
   <div class="main">
-    <!-- Dashboard -->
+
+    <!-- ══ Dashboard Page ══ -->
     <div id="page-dashboard">
       <div class="page-header">
         <h1>📊 لوحة التحكم</h1>
-        <p>إدارة اشتراكات مستخدمي APEX SECURITY في الوقت الفعلي</p>
+        <p>إدارة اشتراكات مستخدمي APEX COMMANDER في الوقت الفعلي</p>
       </div>
-
       <div class="stats-grid">
         <div class="stat-card c-accent"><div class="stat-icon">👥</div><div class="stat-value" id="statTotal">—</div><div class="stat-label">إجمالي المستخدمين</div></div>
         <div class="stat-card c-green"><div class="stat-icon">✅</div><div class="stat-value" id="statActive">—</div><div class="stat-label">نشط</div></div>
         <div class="stat-card c-red"><div class="stat-icon">❌</div><div class="stat-value" id="statExpired">—</div><div class="stat-label">منتهي</div></div>
-        <div class="stat-card c-orange"><div class="stat-icon">⚠️</div><div class="stat-value" id="statSoon">—</div><div class="stat-label">ينتهي خلال 3 أيام</div></div>
+        <div class="stat-card c-orange"><div class="stat-icon">⚠️</div><div class="stat-value" id="statSoon">—</div><div class="stat-label">ينتهي قريباً</div></div>
+        <div class="stat-card c-red"><div class="stat-icon">⛔</div><div class="stat-value" id="statBlocked">—</div><div class="stat-label">محظور</div></div>
+        <div class="stat-card c-purple"><div class="stat-icon">⏸️</div><div class="stat-value" id="statPaused">—</div><div class="stat-label">مجمّد</div></div>
       </div>
 
       <div class="panels">
-        <!-- Users List -->
+        <!-- Users List Panel -->
         <div class="panel">
           <div class="panel-header">
             <h2>قائمة المشتركين</h2>
             <button class="btn-sm btn-refresh" id="btnRefresh">🔄 تحديث</button>
           </div>
           <div class="panel-body">
-            <div class="search-bar">
-              <input id="searchInput" placeholder="🔍 ابحث بالاسم أو Device ID...">
-            </div>
+            <div class="search-bar"><input id="searchInput" placeholder="🔍 ابحث بالاسم أو Device ID..."></div>
             <div class="filter-tabs">
               <button class="filter-tab active" data-filter="all">الكل</button>
               <button class="filter-tab" data-filter="active">نشط</button>
               <button class="filter-tab" data-filter="expired">منتهي</button>
               <button class="filter-tab" data-filter="soon">قريباً</button>
+              <button class="filter-tab" data-filter="blocked">محظور</button>
+              <button class="filter-tab" data-filter="paused">مجمّد</button>
             </div>
             <div id="tableContainer">
               <div class="empty-state"><div class="empty-icon">⏳</div><div>جاري التحميل...</div></div>
@@ -314,17 +272,17 @@
           </div>
         </div>
 
-        <!-- Add User -->
+        <!-- Add User Panel -->
         <div class="panel">
-          <div class="panel-header"><h2>➕ تفعيل مستخدم</h2></div>
+          <div class="panel-header"><h2>➕ تفعيل مستخدم جديد</h2></div>
           <div class="panel-body">
             <div class="form-group">
-              <label class="form-label">📱 Device ID (من شاشة APEX)</label>
-              <input class="form-control" id="newDeviceId" placeholder="مثال: a1b2c3d4e5f67890" dir="ltr">
+              <label class="form-label">📱 Device ID (من شاشة APEX COMMANDER)</label>
+              <input class="form-control" id="newDeviceId" placeholder="مثال: UTH-94035ede308c6d2a" dir="ltr">
             </div>
             <div class="form-group">
-              <label class="form-label">👤 اسم المستخدم (اختياري)</label>
-              <input class="form-control" id="newName" placeholder="مثال: أبو محمد">
+              <label class="form-label">👤 الاسم (يظهر في التطبيق)</label>
+              <input class="form-control" id="newName" placeholder="مثال: أبو علي">
             </div>
             <div class="form-label" style="margin-bottom:7px">⏱️ مدة الاشتراك</div>
             <div class="duration-grid" id="addDurationGrid">
@@ -338,8 +296,8 @@
               <input class="form-control" id="customDate" type="date">
             </div>
             <div class="form-group">
-              <label class="form-label">📝 ملاحظة (اختياري)</label>
-              <input class="form-control" id="newNotes" placeholder="مثال: دفع 10,000 دينار">
+              <label class="form-label">📝 ملاحظة</label>
+              <input class="form-control" id="newNotes" placeholder="مثال: دفع 10,000">
             </div>
             <button class="btn-add" id="addBtn">✅ تفعيل الاشتراك</button>
           </div>
@@ -347,35 +305,61 @@
       </div>
     </div>
 
-    <!-- Settings Page -->
-    <div id="page-settings" style="display:none;">
-      <div class="page-header"><h1>⚙️ الإعدادات</h1><p>تعديل إعدادات الاتصال بمشروع Firebase</p></div>
-      <div class="panel" style="max-width:500px;">
-        <div class="panel-header"><h2>كود firebaseConfig المسجل</h2></div>
-        <div class="panel-body">
-          <textarea class="form-control" id="stJsonInput" style="height:140px;"></textarea>
-          <button class="btn-primary" id="btnUpdateCfg">💾 تحديث الإعدادات وإعادة التحميل</button>
-          <button class="btn-primary" style="margin-top:10px;background:linear-gradient(135deg,#f97316,#dc2626)" id="btnResetAll">🗑️ مسح الإعدادات بالكامل</button>
+    <!-- ══ Broadcast Page ══ -->
+    <div id="page-broadcast" style="display:none;">
+      <div class="page-header">
+        <h1>📣 البث الإداري</h1>
+        <p>إرسال رسائل لمستخدم معين تظهر داخل تطبيق APEX COMMANDER</p>
+      </div>
+      <div style="max-width:560px;">
+        <div class="panel">
+          <div class="panel-header"><h2>📤 إرسال رسالة إدارية</h2></div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label class="form-label">📱 Device ID المستهدف</label>
+              <input class="form-control" id="bcastDeviceId" placeholder="مثال: UTH-94035ede308c6d2a" dir="ltr">
+            </div>
+            <div class="form-group">
+              <label class="form-label">💬 الرسائل (أضف كل رسالة ثم أضغط "إضافة")</label>
+              <div style="display:flex;gap:8px;">
+                <input class="form-control" id="bcastMsgInput" placeholder="نص الرسالة...">
+                <button class="btn-sm btn-refresh" id="btnAddMsg" style="white-space:nowrap;padding:0 14px;">+ إضافة</button>
+              </div>
+            </div>
+            <div class="msg-list" id="msgList"></div>
+            <button class="btn-add" id="btnSendBcast">📣 إرسال البث</button>
+            <div style="margin-top:14px;padding:12px;background:var(--surface);border-radius:9px;font-size:12px;color:var(--muted);line-height:1.7;">
+              💡 ستظهر هذه الرسائل في قسم الإشعارات داخل تطبيق APEX COMMANDER بمجرد إعادة تشغيل التطبيق.
+            </div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="panel" style="max-width:500px; margin-top:18px;">
-        <div class="panel-header"><h2>🔐 تنبيه حماية قواعد Realtime Database</h2></div>
+    <!-- ══ Settings Page ══ -->
+    <div id="page-settings" style="display:none;">
+      <div class="page-header"><h1>⚙️ الإعدادات</h1></div>
+      <div class="panel" style="max-width:500px;">
+        <div class="panel-header"><h2>🔐 قواعد Realtime Database (مرجع)</h2></div>
         <div class="panel-body" style="font-size:13px;line-height:1.8;color:var(--muted)">
-          لكي يعمل تطبيق الأندرويد دون الحاجة لتسجيل دخول كل مستخدم، يجب أن تكون <b>القراءة (.read)</b> مسموحة، بينما <b>الكتابة (.write)</b> مقتصرة على حساب المشرف فقط (عبر الـ UID):
-          <pre style="background:var(--surface);padding:10px;border-radius:8px;margin-top:10px;color:var(--accent);direction:ltr;text-align:left;">{
+          <p style="margin-bottom:10px;">لكي يعمل تطبيق الأندرويد بشكل صحيح مع الكتابة المقيدة بالأدمن:</p>
+          <pre style="background:var(--bg);padding:12px;border-radius:8px;color:var(--accent);direction:ltr;text-align:left;overflow-x:auto;">{
   "rules": {
     ".read": true,
     ".write": "auth != null && auth.uid === 'YOUR_ADMIN_UID'"
   }
 }</pre>
+          <div style="margin-top:14px;">
+            <button class="btn-primary" id="btnLogoutSettings">🚪 تسجيل الخروج</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- Delete Modal -->
+  </div><!-- end .main -->
+</div><!-- end #app -->
+
+<!-- ── Delete Modal ── -->
 <div class="modal-overlay" id="delModal">
   <div class="modal">
     <h3>⚠️ تأكيد الحذف</h3>
@@ -387,7 +371,7 @@
   </div>
 </div>
 
-<!-- Renew Modal -->
+<!-- ── Renew Modal ── -->
 <div class="modal-overlay" id="renewModal">
   <div class="modal">
     <h3>🔄 تجديد الاشتراك</h3>
@@ -407,14 +391,30 @@
 
 <div id="toastContainer"></div>
 
-<!-- ── Firebase Web SDK (ES6 Modules) ── -->
+<!-- ── Firebase Web SDK ── -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, get, set, remove, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-const CFG_KEY = 'apex_fb_config_v3';
-let fbApp = null, fbAuth = null, fbDb = null;
+// ── Firebase Config ──
+const FB_CFG = {
+  apiKey: "AIzaSyA_Xtxlq5ar7uerPCx1yP6rpKAgOT7bdJo",
+  authDomain: "loco-d66c7.firebaseapp.com",
+  databaseURL: "https://loco-d66c7-default-rtdb.firebaseio.com",
+  projectId: "loco-d66c7",
+  storageBucket: "loco-d66c7.firebasestorage.app",
+  messagingSenderId: "81915563388",
+  appId: "1:81915563388:web:b44d61b9433a24080b68f9"
+};
+
+const fbApp  = initializeApp(FB_CFG);
+const fbAuth = getAuth(fbApp);
+const fbDb   = getDatabase(fbApp);
+
+document.getElementById('fbUrlDisplay').textContent = FB_CFG.databaseURL;
+
+// ── State ──
 let users = {};
 let curFilter = 'all';
 let addDays = 30;
@@ -422,71 +422,74 @@ let renewDays = 30;
 let delTarget = null;
 let renewTarget = null;
 let useCustomDate = false;
+let broadcastMsgs = [];
 
-// Helpers
-window.toast = function(msg, type='info'){
+// ── Helpers ──
+window.toast = (msg, type='info') => {
   const el = document.createElement('div');
   el.className = `toast toast-${type}`;
   el.textContent = msg;
   document.getElementById('toastContainer').appendChild(el);
-  setTimeout(()=>el.remove(), 3500);
+  setTimeout(() => el.remove(), 3800);
 };
 
-window.copyText = function(t){
-  navigator.clipboard.writeText(t).then(()=>toast('تم نسخ: '+t.substring(0,20)+'…','info'));
+window.copyText = (t) => {
+  navigator.clipboard.writeText(t).then(() => toast('تم نسخ المعرف', 'info'));
 };
 
-window.closeModals = function(){
-  document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('show'));
+window.closeModals = () => {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
   delTarget = null; renewTarget = null;
 };
 
-window.showPage = function(name, el){
-  document.querySelectorAll('.main > div').forEach(d=>d.style.display='none');
-  document.getElementById('page-'+name).style.display='block';
-  document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('nav-'+name)?.classList.add('active');
-  document.getElementById('mob-nav-'+name)?.classList.add('active');
-  if(name === 'settings'){
-    const saved = localStorage.getItem(CFG_KEY) || '{}';
-    document.getElementById('stJsonInput').value = JSON.stringify(JSON.parse(saved), null, 2);
-  }
+window.showPage = (name, el) => {
+  document.querySelectorAll('.main > div').forEach(d => d.style.display = 'none');
+  document.getElementById('page-' + name).style.display = 'block';
+  document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('nav-' + name)?.classList.add('active');
+  document.getElementById('mob-nav-' + name)?.classList.add('active');
 };
 
-// Parse firebaseConfig JSON
-function parseFbConfig(txt){
-  try {
-    // If user pasted code with const firebaseConfig = {...}
-    let s = txt.trim();
-    if(s.includes('{')) {
-      s = s.substring(s.indexOf('{'), s.lastIndexOf('}') + 1);
-    }
-    const cfg = JSON.parse(s);
-    if(!cfg.databaseURL || !cfg.apiKey){
-      throw new Error('يجب أن يحتوي على apiKey و databaseURL على الأقل');
-    }
-    return cfg;
-  } catch(e){
-    toast('كود JSON غير صحيح: ' + e.message, 'error');
-    return null;
+// ── Auth State ──
+onAuthStateChanged(fbAuth, (user) => {
+  if (user) {
+    document.getElementById('loginScreen').classList.remove('show');
+    document.getElementById('app').classList.add('show');
+    document.getElementById('fbUserDisplay').textContent = user.email;
+    const mob = document.getElementById('fbUserDisplayMobile');
+    if (mob) mob.textContent = user.email.split('@')[0];
+    loadUsers();
+  } else {
+    document.getElementById('app').classList.remove('show');
+    document.getElementById('loginScreen').classList.add('show');
   }
-}
+});
 
-function initFirebase(cfg){
+// ── Login ──
+document.getElementById('btnLogin').addEventListener('click', async () => {
+  const email = document.getElementById('emailInput').value.trim();
+  const pwd   = document.getElementById('pwdInput').value.trim();
+  if (!email || !pwd) { toast('أدخل البريد وكلمة المرور', 'error'); return; }
   try {
-    fbApp = initializeApp(cfg);
-    fbAuth = getAuth(fbApp);
-    fbDb = getDatabase(fbApp);
-    document.getElementById('fbUrlDisplay').textContent = cfg.databaseURL;
-    return true;
-  } catch(e){
-    toast('فشل تشغيل Firebase: ' + e.message, 'error');
-    return false;
+    await signInWithEmailAndPassword(fbAuth, email, pwd);
+    document.getElementById('loginError').style.display = 'none';
+  } catch (e) {
+    document.getElementById('loginError').style.display = 'block';
   }
-}
+});
 
-// Load users from DB
-async function loadUsers(){
+document.getElementById('pwdInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('btnLogin').click();
+});
+
+// ── Logout ──
+const doLogout = () => signOut(fbAuth);
+document.getElementById('btnLogout').addEventListener('click', doLogout);
+document.getElementById('btnLogoutMobile')?.addEventListener('click', doLogout);
+document.getElementById('btnLogoutSettings')?.addEventListener('click', doLogout);
+
+// ── Load Users ──
+async function loadUsers() {
   document.getElementById('tableContainer').innerHTML =
     '<div class="empty-state"><div class="empty-icon">⏳</div><div>جاري التحميل من Firebase...</div></div>';
   try {
@@ -494,122 +497,161 @@ async function loadUsers(){
     users = snap.exists() ? snap.val() : {};
     updateStats();
     renderTable();
-  } catch(e){
+  } catch (e) {
     document.getElementById('tableContainer').innerHTML =
-      `<div class="empty-state"><div class="empty-icon">❌</div><div>فشل جلب البيانات<br><small style="color:var(--red)">${e.message}</small></div></div>`;
-    toast('خطأ في قراءة القاعدة: ' + e.message, 'error');
+      `<div class="empty-state"><div class="empty-icon">❌</div><div>فشل جلب البيانات: ${e.message}</div></div>`;
+    toast('خطأ: ' + e.message, 'error');
   }
 }
 
-function getStatus(u){
-  if(!u || u.status !== 'active') return 'expired';
-  const diff = (u.expires_at || 0) - Date.now();
-  if(diff <= 0) return 'expired';
-  if(diff <= 3 * 86400000) return 'soon';
+// ── Status Logic ──
+function getStatus(u) {
+  if (!u) return 'expired';
+  if (u.status === 'blocked') return 'blocked';
+  if (u.status === 'paused') return 'paused';
+  if (u.status !== 'active') return 'expired';
+  if (Date.now() >= (u.expires_at || 0)) return 'expired';
+  if ((u.expires_at - Date.now()) <= 3 * 86400000) return 'soon';
   return 'active';
 }
 
-function updateStats(){
-  const list = Object.values(users);
-  let a=0, e=0, s=0;
-  list.forEach(u => {
+// ── Stats ──
+function updateStats() {
+  let a = 0, e = 0, s = 0, bl = 0, pa = 0;
+  Object.values(users).forEach(u => {
     const st = getStatus(u);
-    if(st === 'active') a++;
-    else if(st === 'expired') e++;
-    else s++;
+    if (st === 'active') a++;
+    else if (st === 'expired') e++;
+    else if (st === 'soon') s++;
+    else if (st === 'blocked') bl++;
+    else if (st === 'paused') pa++;
   });
-  document.getElementById('statTotal').textContent = list.length;
-  document.getElementById('statActive').textContent = a;
+  document.getElementById('statTotal').textContent   = Object.keys(users).length;
+  document.getElementById('statActive').textContent  = a;
   document.getElementById('statExpired').textContent = e;
-  document.getElementById('statSoon').textContent = s;
+  document.getElementById('statSoon').textContent    = s;
+  document.getElementById('statBlocked').textContent = bl;
+  document.getElementById('statPaused').textContent  = pa;
 }
 
-function fmtDate(ts){
-  if(!ts) return '—';
-  return new Date(ts).toLocaleDateString('ar-IQ',{year:'numeric',month:'short',day:'numeric'});
+function fmtDate(ts) {
+  if (!ts) return '—';
+  return new Date(ts).toLocaleDateString('ar-IQ', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-function remDays(ts){
+function remDays(ts) {
   const d = ts - Date.now();
-  if(d <= 0) return 'انتهى الاشتراك';
+  if (d <= 0) return 'انتهى';
   const days = Math.ceil(d / 86400000);
-  return days === 1 ? 'يتبقى يوم واحد' : 'يتبقى ' + days + ' يوم';
+  return days === 1 ? 'يوم واحد' : days + ' يوم';
 }
 
-function renderTable(){
+// ── Render Table ──
+function renderTable() {
   const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
   let entries = Object.entries(users).filter(([id, u]) => {
     const st = getStatus(u);
-    if(curFilter !== 'all' && st !== curFilter) return false;
-    if(q && !id.toLowerCase().includes(q) && !(u.name || '').toLowerCase().includes(q)) return false;
+    if (curFilter !== 'all' && st !== curFilter) return false;
+    if (q && !id.toLowerCase().includes(q) && !(u.name || '').toLowerCase().includes(q)) return false;
     return true;
   });
-  entries.sort(([,a], [,b]) => {
-    const m = {active:0, soon:1, expired:2};
-    const d = m[getStatus(a)] - m[getStatus(b)];
-    if(d) return d;
-    return (b.expires_at || 0) - (a.expires_at || 0);
+
+  const order = { active: 0, soon: 1, paused: 2, expired: 3, blocked: 4 };
+  entries.sort(([, a], [, b]) => {
+    const d = (order[getStatus(a)] || 0) - (order[getStatus(b)] || 0);
+    return d !== 0 ? d : (b.expires_at || 0) - (a.expires_at || 0);
   });
-  if(!entries.length){
+
+  if (!entries.length) {
     document.getElementById('tableContainer').innerHTML =
       '<div class="empty-state"><div class="empty-icon">🔍</div><div>لا يوجد مشتركين في هذا التصنيف</div></div>';
     return;
   }
+
+  const badgeMap = {
+    active:  '<span class="badge badge-active">✅ نشط</span>',
+    soon:    '<span class="badge badge-soon">⚠️ قريباً</span>',
+    expired: '<span class="badge badge-expired">❌ منتهي</span>',
+    blocked: '<span class="badge badge-blocked">⛔ محظور</span>',
+    paused:  '<span class="badge badge-paused">⏸️ مجمّد</span>',
+  };
+
   const rows = entries.map(([id, u]) => {
-    const st = getStatus(u);
-    const badge = st === 'active'
-      ? '<span class="badge badge-active">✅ نشط</span>'
-      : st === 'soon'
-        ? '<span class="badge badge-soon">⚠️ قريباً</span>'
-        : '<span class="badge badge-expired">❌ منتهي</span>';
-    const exp = u.expires_at ? fmtDate(u.expires_at) : '—';
-    const rem = u.expires_at ? remDays(u.expires_at) : '';
-    const short = id.length > 14 ? id.substring(0,14) + '…' : id;
+    const st    = getStatus(u);
+    const badge = badgeMap[st] || '';
+    const short = id.length > 18 ? id.substring(0, 18) + '…' : id;
+    const exp   = u.expires_at ? fmtDate(u.expires_at) : '—';
+    const rem   = u.expires_at ? remDays(u.expires_at) : '';
+    const hasMsg = u.admin_messages && u.admin_messages.length > 0;
     return `<tr>
-      <td><span class="device-id" onclick="copyText('${id}')" title="انقر للنسخ: ${id}">${short}</span></td>
-      <td>${u.name || '<span style="color:var(--muted)">—</span>'}</td>
+      <td><span class="device-id" onclick="copyText('${id}')" title="${id}">${short}</span></td>
+      <td>${u.name || '<span style="color:var(--muted)">—</span>'}${hasMsg ? ' <span title="لديه رسائل إدارية">📣</span>' : ''}</td>
       <td>${badge}</td>
       <td><span style="font-size:12px">${exp}</span><br><span style="color:var(--muted);font-size:11px">${rem}</span></td>
       <td><div class="action-btns">
-        <button class="btn-icon btn-renew" data-id="${id}" title="تجديد">🔄</button>
+        <button class="btn-icon btn-renew"  data-id="${id}" title="تجديد">🔄</button>
+        <button class="btn-icon btn-block"  data-id="${id}" data-status="${u.status}" title="${u.status === 'blocked' ? 'رفع الحظر' : 'حظر'}">
+          ${u.status === 'blocked' ? '✅' : '⛔'}
+        </button>
+        <button class="btn-icon btn-pause"  data-id="${id}" data-status="${u.status}" title="${u.status === 'paused' ? 'إلغاء التجميد' : 'تجميد'}">
+          ${u.status === 'paused' ? '▶️' : '⏸️'}
+        </button>
         <button class="btn-icon btn-delete" data-id="${id}" title="حذف">🗑️</button>
       </div></td>
     </tr>`;
   }).join('');
+
   document.getElementById('tableContainer').innerHTML = `
     <table class="users-table">
       <thead><tr><th>Device ID</th><th>الاسم</th><th>الحالة</th><th>ينتهي</th><th>إجراء</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 
-  // Attach action button events
-  document.querySelectorAll('.btn-renew').forEach(b => {
-    b.addEventListener('click', () => openRenewModal(b.dataset.id));
-  });
-  document.querySelectorAll('.btn-delete').forEach(b => {
-    b.addEventListener('click', () => openDeleteModal(b.dataset.id));
-  });
+  document.querySelectorAll('.btn-renew').forEach(b => b.addEventListener('click', () => openRenewModal(b.dataset.id)));
+  document.querySelectorAll('.btn-delete').forEach(b => b.addEventListener('click', () => openDeleteModal(b.dataset.id)));
+  document.querySelectorAll('.btn-block').forEach(b  => b.addEventListener('click', () => toggleStatus(b.dataset.id, 'blocked')));
+  document.querySelectorAll('.btn-pause').forEach(b  => b.addEventListener('click', () => toggleStatus(b.dataset.id, 'paused')));
 }
 
-// Add User
-async function addUser(){
-  const id = (document.getElementById('newDeviceId').value || '').trim();
+// ── Toggle Blocked / Paused ──
+async function toggleStatus(id, action) {
+  const u = users[id];
+  if (!u) return;
+  let newStatus;
+  if (action === 'blocked') newStatus = (u.status === 'blocked') ? 'active' : 'blocked';
+  if (action === 'paused')  newStatus = (u.status === 'paused')  ? 'active' : 'paused';
+  try {
+    await update(ref(fbDb, 'users/' + id), { status: newStatus });
+    users[id].status = newStatus;
+    updateStats(); renderTable();
+    const label = action === 'blocked'
+      ? (newStatus === 'blocked' ? '⛔ تم حظر المستخدم' : '✅ تم رفع الحظر')
+      : (newStatus === 'paused'  ? '⏸️ تم تجميد الاشتراك' : '▶️ تم إلغاء التجميد');
+    toast(label, newStatus === 'active' ? 'success' : 'error');
+  } catch (e) {
+    toast('فشل تغيير الحالة: ' + e.message, 'error');
+  }
+}
+
+// ── Add User ──
+async function addUser() {
+  const id   = (document.getElementById('newDeviceId').value || '').trim();
   const name = (document.getElementById('newName').value || '').trim();
   const note = (document.getElementById('newNotes').value || '').trim();
   const cust = document.getElementById('customDate').value;
-  if(!id){ toast('أدخل Device ID', 'error'); return; }
-  if(id.length < 6){ toast('Device ID قصير جداً', 'error'); return; }
+  if (!id) { toast('أدخل Device ID', 'error'); return; }
+  if (id.length < 6) { toast('Device ID قصير جداً', 'error'); return; }
 
   const exp = useCustomDate && cust
-    ? new Date(cust).setHours(23,59,59,999)
+    ? new Date(cust).setHours(23, 59, 59, 999)
     : Date.now() + addDays * 86400000;
-  
+
   const btn = document.getElementById('addBtn');
   btn.disabled = true; btn.innerHTML = '<span class="loader"></span> جاري التفعيل...';
   try {
-    const data = {status:'active', expires_at:exp, created_at:Date.now()};
-    if(name) data.name = name;
-    if(note) data.notes = note;
+    const data = { status: 'active', expires_at: exp, created_at: Date.now() };
+    if (name) data.name = name;
+    if (note) data.notes = note;
     await set(ref(fbDb, 'users/' + id), data);
     users[id] = data;
     updateStats(); renderTable();
@@ -619,199 +661,142 @@ async function addUser(){
     document.getElementById('customDate').value = '';
     useCustomDate = false;
     toast('✅ تم التفعيل! ينتهي: ' + fmtDate(exp), 'success');
-  } catch(e){
-    toast('❌ فشل التفعيل (تأكد من تسجيل دخول الأدمن): ' + e.message, 'error');
+  } catch (e) {
+    toast('❌ فشل التفعيل: ' + e.message, 'error');
   } finally {
     btn.disabled = false; btn.innerHTML = '✅ تفعيل الاشتراك';
   }
 }
 
-// Renew User
-function openRenewModal(id){
+// ── Renew ──
+function openRenewModal(id) {
   renewTarget = id;
   renewDays = 30;
-  document.querySelectorAll('#renewDurationGrid .duration-btn').forEach((b,i)=>b.classList.toggle('selected',i===1));
-  document.getElementById('renewMsg').textContent =
-    'تجديد اشتراك: ' + (users[id]?.name || id.substring(0,16)+'…');
+  document.querySelectorAll('#renewDurationGrid .duration-btn').forEach((b, i) => b.classList.toggle('selected', i === 1));
+  document.getElementById('renewMsg').textContent = 'تجديد: ' + (users[id]?.name || id.substring(0, 20) + '…');
   document.getElementById('renewModal').classList.add('show');
 }
 
-async function confirmRenew(){
-  if(!renewTarget) return;
+async function confirmRenew() {
+  if (!renewTarget) return;
   try {
     const u = users[renewTarget] || {};
     const base = Math.max(Date.now(), u.expires_at || 0);
     const newExp = base + renewDays * 86400000;
-    const updated = {...u, status:'active', expires_at:newExp};
-    await set(ref(fbDb, 'users/' + renewTarget), updated);
-    users[renewTarget] = updated;
+    await update(ref(fbDb, 'users/' + renewTarget), { status: 'active', expires_at: newExp });
+    users[renewTarget] = { ...u, status: 'active', expires_at: newExp };
     updateStats(); renderTable();
     toast('✅ تم التجديد! ينتهي: ' + fmtDate(newExp), 'success');
-  } catch(e){
+  } catch (e) {
     toast('فشل التجديد: ' + e.message, 'error');
   }
   closeModals();
 }
 
-// Delete User
-function openDeleteModal(id){
+// ── Delete ──
+function openDeleteModal(id) {
   delTarget = id;
-  document.getElementById('delMsg').textContent =
-    'حذف "' + (users[id]?.name || id.substring(0,16)+'…') + '" نهائياً؟';
+  document.getElementById('delMsg').textContent = 'حذف "' + (users[id]?.name || id.substring(0, 20) + '…') + '" نهائياً؟';
   document.getElementById('delModal').classList.add('show');
 }
 
-async function confirmDelete(){
-  if(!delTarget) return;
+async function confirmDelete() {
+  if (!delTarget) return;
   try {
     await remove(ref(fbDb, 'users/' + delTarget));
     delete users[delTarget];
     updateStats(); renderTable();
     toast('تم الحذف بنجاح', 'success');
-  } catch(e){
+  } catch (e) {
     toast('فشل الحذف: ' + e.message, 'error');
   }
   closeModals();
 }
 
-// Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-  const DEFAULT_CFG = {
-    apiKey: "AIzaSyA_Xtxlq5ar7uerPCx1yP6rpKAgOT7bdJo",
-    authDomain: "loco-d66c7.firebaseapp.com",
-    databaseURL: "https://loco-d66c7-default-rtdb.firebaseio.com",
-    projectId: "loco-d66c7",
-    storageBucket: "loco-d66c7.firebasestorage.app",
-    messagingSenderId: "81915563388",
-    appId: "1:81915563388:web:b44d61b9433a24080b68f9",
-    measurementId: "G-2VPYHC6Z37"
-  };
+// ── Admin Broadcast ──
+function refreshMsgList() {
+  const list = document.getElementById('msgList');
+  if (!broadcastMsgs.length) { list.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:10px;">لا توجد رسائل بعد</div>'; return; }
+  list.innerHTML = broadcastMsgs.map((m, i) =>
+    `<div class="msg-item"><span>${m}</span><button onclick="removeMsg(${i})">✕</button></div>`
+  ).join('');
+}
 
-  const savedCfg = localStorage.getItem(CFG_KEY);
-  const cfgObj = savedCfg ? JSON.parse(savedCfg) : DEFAULT_CFG;
-  
-  if(initFirebase(cfgObj)){
-    document.getElementById('configScreen').classList.add('hidden');
-    document.getElementById('loginScreen').classList.add('show');
-    
-    onAuthStateChanged(fbAuth, (user) => {
-      if(user){
-        document.getElementById('loginScreen').classList.remove('show');
-        document.getElementById('app').classList.add('show');
-        document.getElementById('fbUserDisplay').textContent = user.email;
-        const mobUser = document.getElementById('fbUserDisplayMobile');
-        if(mobUser) mobUser.textContent = user.email.split('@')[0];
-        loadUsers();
-      } else {
-        document.getElementById('app').classList.remove('show');
-        document.getElementById('loginScreen').classList.add('show');
-      }
-    });
-  }
+window.removeMsg = (i) => {
+  broadcastMsgs.splice(i, 1);
+  refreshMsgList();
+};
 
-  // Save config button
-  document.getElementById('btnSaveConfig').addEventListener('click', () => {
-    const txt = document.getElementById('cfgJsonInput').value;
-    const cfgObj = parseFbConfig(txt);
-    if(cfgObj){
-      localStorage.setItem(CFG_KEY, JSON.stringify(cfgObj));
-      location.reload();
-    }
-  });
-
-  // Login button
-  document.getElementById('btnLogin').addEventListener('click', async () => {
-    const email = document.getElementById('emailInput').value.trim();
-    const pwd = document.getElementById('pwdInput').value.trim();
-    if(!email || !pwd){ toast('أدخل البريد وكلمة المرور', 'error'); return; }
-    try {
-      await signInWithEmailAndPassword(fbAuth, email, pwd);
-      document.getElementById('loginError').style.display = 'none';
-    } catch(e){
-      document.getElementById('loginError').style.display = 'block';
-    }
-  });
-
-  document.getElementById('pwdInput').addEventListener('keydown', (e) => {
-    if(e.key === 'Enter') document.getElementById('btnLogin').click();
-  });
-
-  // Logout button
-  const doLogout = () => signOut(fbAuth);
-  document.getElementById('btnLogout').addEventListener('click', doLogout);
-  document.getElementById('btnLogoutMobile')?.addEventListener('click', doLogout);
-
-  // Reset config
-  document.getElementById('btnResetCfg').addEventListener('click', () => {
-    if(confirm('هل تريد إعادة تعيين كود firebaseConfig؟')){
-      localStorage.removeItem(CFG_KEY);
-      location.reload();
-    }
-  });
-
-  document.getElementById('btnResetAll').addEventListener('click', () => {
-    if(confirm('هل تريد مسح الإعدادات بالكامل؟')){
-      localStorage.removeItem(CFG_KEY);
-      location.reload();
-    }
-  });
-
-  document.getElementById('btnUpdateCfg').addEventListener('click', () => {
-    const txt = document.getElementById('stJsonInput').value;
-    const cfgObj = parseFbConfig(txt);
-    if(cfgObj){
-      localStorage.setItem(CFG_KEY, JSON.stringify(cfgObj));
-      location.reload();
-    }
-  });
-
-  // Filter buttons
-  document.querySelectorAll('.filter-tab').forEach(b => {
-    b.addEventListener('click', () => {
-      curFilter = b.dataset.filter;
-      document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
-      b.classList.add('active');
-      renderTable();
-    });
-  });
-
-  // Search input
-  document.getElementById('searchInput').addEventListener('input', renderTable);
-  document.getElementById('btnRefresh').addEventListener('click', loadUsers);
-
-  // Duration buttons
-  document.querySelectorAll('#addDurationGrid .duration-btn').forEach(b => {
-    b.addEventListener('click', () => {
-      addDays = parseInt(b.dataset.days);
-      useCustomDate = false;
-      document.getElementById('customDate').value = '';
-      document.querySelectorAll('#addDurationGrid .duration-btn').forEach(x=>x.classList.remove('selected'));
-      b.classList.add('selected');
-    });
-  });
-
-  document.getElementById('customDate').addEventListener('change', () => {
-    if(document.getElementById('customDate').value){
-      useCustomDate = true;
-      document.querySelectorAll('#addDurationGrid .duration-btn').forEach(x=>x.classList.remove('selected'));
-    }
-  });
-
-  // Add User Button
-  document.getElementById('addBtn').addEventListener('click', addUser);
-
-  // Renew buttons inside modal
-  document.querySelectorAll('#renewDurationGrid .duration-btn').forEach(b => {
-    b.addEventListener('click', () => {
-      renewDays = parseInt(b.dataset.renewDays);
-      document.querySelectorAll('#renewDurationGrid .duration-btn').forEach(x=>x.classList.remove('selected'));
-      b.classList.add('selected');
-    });
-  });
-
-  document.getElementById('btnConfirmRenew').addEventListener('click', confirmRenew);
-  document.getElementById('btnConfirmDel').addEventListener('click', confirmDelete);
+document.getElementById('btnAddMsg')?.addEventListener('click', () => {
+  const inp = document.getElementById('bcastMsgInput');
+  const msg = (inp.value || '').trim();
+  if (!msg) return;
+  broadcastMsgs.push(msg);
+  inp.value = '';
+  refreshMsgList();
 });
+
+document.getElementById('btnSendBcast')?.addEventListener('click', async () => {
+  const id = (document.getElementById('bcastDeviceId').value || '').trim();
+  if (!id) { toast('أدخل Device ID', 'error'); return; }
+  if (!broadcastMsgs.length) { toast('أضف رسالة واحدة على الأقل', 'error'); return; }
+  try {
+    await update(ref(fbDb, 'users/' + id), { admin_messages: broadcastMsgs });
+    if (users[id]) users[id].admin_messages = [...broadcastMsgs];
+    toast('📣 تم إرسال البث بنجاح!', 'success');
+    broadcastMsgs = [];
+    refreshMsgList();
+    document.getElementById('bcastDeviceId').value = '';
+  } catch (e) {
+    toast('فشل الإرسال: ' + e.message, 'error');
+  }
+});
+
+// ── Events ──
+document.getElementById('btnRefresh').addEventListener('click', loadUsers);
+document.getElementById('searchInput').addEventListener('input', renderTable);
+
+document.querySelectorAll('.filter-tab').forEach(b => {
+  b.addEventListener('click', () => {
+    curFilter = b.dataset.filter;
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    b.classList.add('active');
+    renderTable();
+  });
+});
+
+document.querySelectorAll('#addDurationGrid .duration-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    addDays = parseInt(b.dataset.days);
+    useCustomDate = false;
+    document.getElementById('customDate').value = '';
+    document.querySelectorAll('#addDurationGrid .duration-btn').forEach(x => x.classList.remove('selected'));
+    b.classList.add('selected');
+  });
+});
+
+document.getElementById('customDate').addEventListener('change', () => {
+  if (document.getElementById('customDate').value) {
+    useCustomDate = true;
+    document.querySelectorAll('#addDurationGrid .duration-btn').forEach(x => x.classList.remove('selected'));
+  }
+});
+
+document.getElementById('addBtn').addEventListener('click', addUser);
+
+document.querySelectorAll('#renewDurationGrid .duration-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    renewDays = parseInt(b.dataset.renewDays);
+    document.querySelectorAll('#renewDurationGrid .duration-btn').forEach(x => x.classList.remove('selected'));
+    b.classList.add('selected');
+  });
+});
+
+document.getElementById('btnConfirmRenew').addEventListener('click', confirmRenew);
+document.getElementById('btnConfirmDel').addEventListener('click', confirmDelete);
+
+// init broadcast list display
+refreshMsgList();
 </script>
 </body>
 </html>
