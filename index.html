@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>APEX COMMANDER — لوحة التحكم</title>
+<title>The FaceLess — لوحة التحكم</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{--bg:#070b14;--surface:#0d1526;--card:#111827;--border:#1e2d4a;--accent:#00e5ff;--green:#10b981;--red:#ef4444;--orange:#f97316;--yellow:#eab308;--purple:#a855f7;--text:#e2e8f0;--muted:#64748b;--glow:0 0 20px rgba(0,229,255,.15);}
@@ -178,8 +178,8 @@
 <!-- ── Login ── -->
 <div id="loginScreen">
   <div class="login-box">
-    <div class="login-logo">APEX SECURITY SYSTEMS</div>
-    <div class="login-title">🛡️ APEX COMMANDER</div>
+    <div class="login-logo">FaceLess SECURITY SYSTEMS</div>
+    <div class="login-title">🛡️ The FaceLess</div>
     <div class="login-sub">لوحة تحكم المشرف — Firebase Auth</div>
     <div class="form-group">
       <label class="form-label">البريد الإلكتروني</label>
@@ -199,7 +199,7 @@
   <!-- Mobile Top Header -->
   <div class="mobile-topbar">
     <div class="mobile-brand">
-      <span style="color:var(--accent);font-weight:800">🛡️ APEX</span>
+      <span style="color:var(--accent);font-weight:800">🛡️ FaceLess</span>
       <span style="font-size:11px;color:var(--muted)">إدارة المشتركين</span>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
@@ -216,7 +216,7 @@
 
   <div class="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-title">🛡️ APEX COMMANDER</div>
+      <div class="brand-title">🛡️ The FaceLess</div>
       <div class="brand-sub">إدارة الاشتراكات المتقدمة</div>
     </div>
     <div class="nav-section">
@@ -238,7 +238,7 @@
     <div id="page-dashboard">
       <div class="page-header">
         <h1>📊 لوحة التحكم</h1>
-        <p>إدارة اشتراكات مستخدمي APEX COMMANDER في الوقت الفعلي</p>
+        <p>إدارة اشتراكات مستخدمي The FaceLess في الوقت الفعلي</p>
       </div>
       <div class="stats-grid">
         <div class="stat-card c-accent"><div class="stat-icon">👥</div><div class="stat-value" id="statTotal">—</div><div class="stat-label">إجمالي المستخدمين</div></div>
@@ -277,7 +277,7 @@
           <div class="panel-header"><h2>➕ تفعيل مستخدم جديد</h2></div>
           <div class="panel-body">
             <div class="form-group">
-              <label class="form-label">📱 Device ID (من شاشة APEX COMMANDER)</label>
+              <label class="form-label">📱 Device ID (من شاشة The FaceLess)</label>
               <input class="form-control" id="newDeviceId" placeholder="مثال: UTH-94035ede308c6d2a" dir="ltr">
             </div>
             <div class="form-group">
@@ -309,7 +309,7 @@
     <div id="page-broadcast" style="display:none;">
       <div class="page-header">
         <h1>📣 البث الإداري</h1>
-        <p>إرسال رسائل لمستخدم معين تظهر داخل تطبيق APEX COMMANDER</p>
+        <p>إرسال رسائل لمستخدم معين تظهر داخل تطبيق The FaceLess</p>
       </div>
       <div style="max-width:560px;">
         <div class="panel">
@@ -329,7 +329,7 @@
             <div class="msg-list" id="msgList"></div>
             <button class="btn-add" id="btnSendBcast">📣 إرسال البث</button>
             <div style="margin-top:14px;padding:12px;background:var(--surface);border-radius:9px;font-size:12px;color:var(--muted);line-height:1.7;">
-              💡 ستظهر هذه الرسائل في قسم الإشعارات داخل تطبيق APEX COMMANDER بمجرد إعادة تشغيل التطبيق.
+              💡 ستظهر هذه الرسائل في قسم الإشعارات داخل تطبيق The FaceLess بمجرد إعادة تشغيل التطبيق.
             </div>
           </div>
         </div>
@@ -621,7 +621,11 @@ async function toggleStatus(id, action) {
   if (action === 'blocked') newStatus = (u.status === 'blocked') ? 'active' : 'blocked';
   if (action === 'paused')  newStatus = (u.status === 'paused')  ? 'active' : 'paused';
   try {
-    await update(ref(fbDb, 'users/' + id), { status: newStatus });
+    const updateData = { status: newStatus };
+    if (newStatus === 'active') {
+      updateData.payload_key = "CYBER_REAPER_SECURE_V26_KEY_9988";
+    }
+    await update(ref(fbDb, 'users/' + id), updateData);
     users[id].status = newStatus;
     updateStats(); renderTable();
     const label = action === 'blocked'
@@ -649,7 +653,12 @@ async function addUser() {
   const btn = document.getElementById('addBtn');
   btn.disabled = true; btn.innerHTML = '<span class="loader"></span> جاري التفعيل...';
   try {
-    const data = { status: 'active', expires_at: exp, created_at: Date.now() };
+    const data = { 
+      status: 'active', 
+      expires_at: exp, 
+      created_at: Date.now(),
+      payload_key: 'CYBER_REAPER_SECURE_V26_KEY_9988'
+    };
     if (name) data.name = name;
     if (note) data.notes = note;
     await set(ref(fbDb, 'users/' + id), data);
@@ -683,8 +692,12 @@ async function confirmRenew() {
     const u = users[renewTarget] || {};
     const base = Math.max(Date.now(), u.expires_at || 0);
     const newExp = base + renewDays * 86400000;
-    await update(ref(fbDb, 'users/' + renewTarget), { status: 'active', expires_at: newExp });
-    users[renewTarget] = { ...u, status: 'active', expires_at: newExp };
+    await update(ref(fbDb, 'users/' + renewTarget), { 
+      status: 'active', 
+      expires_at: newExp,
+      payload_key: 'CYBER_REAPER_SECURE_V26_KEY_9988'
+    });
+    users[renewTarget] = { ...u, status: 'active', expires_at: newExp, payload_key: 'CYBER_REAPER_SECURE_V26_KEY_9988' };
     updateStats(); renderTable();
     toast('✅ تم التجديد! ينتهي: ' + fmtDate(newExp), 'success');
   } catch (e) {
