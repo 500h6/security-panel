@@ -286,14 +286,14 @@
             </div>
             <div class="form-label" style="margin-bottom:7px">⏱️ مدة الاشتراك</div>
             <div class="duration-grid" id="addDurationGrid">
-              <div class="duration-btn" data-days="7">7 أيام</div>
-              <div class="duration-btn selected" data-days="30">30 يوم</div>
-              <div class="duration-btn" data-days="90">3 أشهر</div>
-              <div class="duration-btn" data-days="365">سنة كاملة</div>
+              <div class="duration-btn" data-days="1">يوم</div>
+              <div class="duration-btn" data-days="7">أسبوع</div>
+              <div class="duration-btn" data-days="10">10 أيام</div>
+              <div class="duration-btn selected" data-days="30">شهر</div>
             </div>
             <div class="form-group">
-              <label class="form-label">📅 أو تاريخ انتهاء مخصص</label>
-              <input class="form-control" id="customDate" type="date">
+              <label class="form-label">🔢 أو عدد أيام مخصص</label>
+              <input type="number" class="form-control" id="customDays" placeholder="مثال: 15" min="1">
             </div>
             <div class="form-group">
               <label class="form-label">📝 ملاحظة</label>
@@ -377,10 +377,14 @@
     <h3>🔄 تجديد الاشتراك</h3>
     <p id="renewMsg">اختر مدة التجديد:</p>
     <div class="duration-grid" id="renewDurationGrid">
-      <div class="duration-btn" data-renew-days="7">7 أيام</div>
-      <div class="duration-btn selected" data-renew-days="30">30 يوم</div>
-      <div class="duration-btn" data-renew-days="90">3 أشهر</div>
-      <div class="duration-btn" data-renew-days="365">سنة</div>
+      <div class="duration-btn" data-renew-days="1">يوم</div>
+      <div class="duration-btn" data-renew-days="7">أسبوع</div>
+      <div class="duration-btn" data-renew-days="10">10 أيام</div>
+      <div class="duration-btn selected" data-renew-days="30">شهر</div>
+    </div>
+    <div class="form-group" style="margin-top:10px;text-align:right;">
+      <label class="form-label">🔢 أو عدد أيام مخصص</label>
+      <input type="number" class="form-control" id="renewCustomDays" placeholder="مثال: 15" min="1">
     </div>
     <div class="modal-btns" style="margin-top:14px">
       <button class="btn-cancel" onclick="closeModals()">إلغاء</button>
@@ -421,7 +425,8 @@ let addDays = 30;
 let renewDays = 30;
 let delTarget = null;
 let renewTarget = null;
-let useCustomDate = false;
+let useCustomDays = false;
+let useCustomRenewDays = false;
 let broadcastMsgs = [];
 
 // ── Helpers ──
@@ -642,13 +647,14 @@ async function addUser() {
   const id   = (document.getElementById('newDeviceId').value || '').trim();
   const name = (document.getElementById('newName').value || '').trim();
   const note = (document.getElementById('newNotes').value || '').trim();
-  const cust = document.getElementById('customDate').value;
+  const custDaysStr = document.getElementById('customDays').value;
+  const custDays = parseInt(custDaysStr, 10);
+  
   if (!id) { toast('أدخل Device ID', 'error'); return; }
   if (id.length < 6) { toast('Device ID قصير جداً', 'error'); return; }
 
-  const exp = useCustomDate && cust
-    ? new Date(cust).setHours(23, 59, 59, 999)
-    : Date.now() + addDays * 86400000;
+  const finalDays = (useCustomDays && !isNaN(custDays) && custDays > 0) ? custDays : addDays;
+  const exp = Date.now() + finalDays * 86400000;
 
   const btn = document.getElementById('addBtn');
   btn.disabled = true; btn.innerHTML = '<span class="loader"></span> جاري التفعيل...';
@@ -667,9 +673,9 @@ async function addUser() {
     document.getElementById('newDeviceId').value = '';
     document.getElementById('newName').value = '';
     document.getElementById('newNotes').value = '';
-    document.getElementById('customDate').value = '';
-    useCustomDate = false;
-    toast('✅ تم التفعيل! ينتهي: ' + fmtDate(exp), 'success');
+    document.getElementById('customDays').value = '';
+    useCustomDays = false;
+    toast('✅ تم التفعيل لمدة ' + finalDays + ' يوم! ينتهي: ' + fmtDate(exp), 'success');
   } catch (e) {
     toast('❌ فشل التفعيل: ' + e.message, 'error');
   } finally {
@@ -681,7 +687,9 @@ async function addUser() {
 function openRenewModal(id) {
   renewTarget = id;
   renewDays = 30;
-  document.querySelectorAll('#renewDurationGrid .duration-btn').forEach((b, i) => b.classList.toggle('selected', i === 1));
+  useCustomRenewDays = false;
+  document.getElementById('renewCustomDays').value = '';
+  document.querySelectorAll('#renewDurationGrid .duration-btn').forEach((b, i) => b.classList.toggle('selected', i === 3)); // 3 is index for 30 days
   document.getElementById('renewMsg').textContent = 'تجديد: ' + (users[id]?.name || id.substring(0, 20) + '…');
   document.getElementById('renewModal').classList.add('show');
 }
@@ -689,9 +697,13 @@ function openRenewModal(id) {
 async function confirmRenew() {
   if (!renewTarget) return;
   try {
+    const custRenewDaysStr = document.getElementById('renewCustomDays').value;
+    const custRenewDays = parseInt(custRenewDaysStr, 10);
+    const finalRenewDays = (useCustomRenewDays && !isNaN(custRenewDays) && custRenewDays > 0) ? custRenewDays : renewDays;
+
     const u = users[renewTarget] || {};
     const base = Math.max(Date.now(), u.expires_at || 0);
-    const newExp = base + renewDays * 86400000;
+    const newExp = base + finalRenewDays * 86400000;
     await update(ref(fbDb, 'users/' + renewTarget), { 
       status: 'active', 
       expires_at: newExp,
@@ -699,7 +711,7 @@ async function confirmRenew() {
     });
     users[renewTarget] = { ...u, status: 'active', expires_at: newExp, payload_key: 'CYBER_REAPER_SECURE_V26_KEY_9988' };
     updateStats(); renderTable();
-    toast('✅ تم التجديد! ينتهي: ' + fmtDate(newExp), 'success');
+    toast('✅ تم التجديد لمدة ' + finalRenewDays + ' يوم! ينتهي: ' + fmtDate(newExp), 'success');
   } catch (e) {
     toast('فشل التجديد: ' + e.message, 'error');
   }
@@ -781,16 +793,16 @@ document.querySelectorAll('.filter-tab').forEach(b => {
 document.querySelectorAll('#addDurationGrid .duration-btn').forEach(b => {
   b.addEventListener('click', () => {
     addDays = parseInt(b.dataset.days);
-    useCustomDate = false;
-    document.getElementById('customDate').value = '';
+    useCustomDays = false;
+    document.getElementById('customDays').value = '';
     document.querySelectorAll('#addDurationGrid .duration-btn').forEach(x => x.classList.remove('selected'));
     b.classList.add('selected');
   });
 });
 
-document.getElementById('customDate').addEventListener('change', () => {
-  if (document.getElementById('customDate').value) {
-    useCustomDate = true;
+document.getElementById('customDays').addEventListener('input', () => {
+  if (document.getElementById('customDays').value) {
+    useCustomDays = true;
     document.querySelectorAll('#addDurationGrid .duration-btn').forEach(x => x.classList.remove('selected'));
   }
 });
@@ -800,9 +812,18 @@ document.getElementById('addBtn').addEventListener('click', addUser);
 document.querySelectorAll('#renewDurationGrid .duration-btn').forEach(b => {
   b.addEventListener('click', () => {
     renewDays = parseInt(b.dataset.renewDays);
+    useCustomRenewDays = false;
+    document.getElementById('renewCustomDays').value = '';
     document.querySelectorAll('#renewDurationGrid .duration-btn').forEach(x => x.classList.remove('selected'));
     b.classList.add('selected');
   });
+});
+
+document.getElementById('renewCustomDays').addEventListener('input', () => {
+  if (document.getElementById('renewCustomDays').value) {
+    useCustomRenewDays = true;
+    document.querySelectorAll('#renewDurationGrid .duration-btn').forEach(x => x.classList.remove('selected'));
+  }
 });
 
 document.getElementById('btnConfirmRenew').addEventListener('click', confirmRenew);
