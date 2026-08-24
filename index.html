@@ -79,10 +79,39 @@
   .form-control{width:100%;padding:10px 13px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;transition:.2s;text-align:right;}
   .form-control:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,.07);}
   select.form-control option{background:var(--card);}
-  .duration-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:14px;}
-  .duration-btn{padding:9px;border-radius:8px;text-align:center;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:.2s;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:500;}
-  .duration-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .duration-btn.selected{border-color:var(--accent);background:rgba(0,229,255,.1);color:var(--accent);}
+  /* ── Quick Presets ── */
+  .preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;}
+  .preset-btn{padding:8px 4px;border-radius:8px;text-align:center;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:.2s;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:600;}
+  .preset-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,229,255,.05);}
+  .preset-btn.selected{border-color:var(--accent);background:rgba(0,229,255,.12);color:var(--accent);}
+
+  /* ── Date Time Picker ── */
+  .datetime-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+  .datetime-col label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600;}
+  .datetime-col input{width:100%;padding:9px 10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;transition:.2s;color-scheme:dark;}
+  .datetime-col input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,.07);}
+
+  /* ── Duration Preview ── */
+  .duration-preview{margin:10px 0 14px;padding:12px 14px;border-radius:10px;border:1px solid rgba(0,229,255,.2);background:rgba(0,229,255,.05);display:none;}
+  .duration-preview.show{display:block;}
+  .preview-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:4px;}
+  .preview-row:last-child{margin-bottom:0;}
+  .preview-label{color:var(--muted);}
+  .preview-val{color:var(--accent);font-weight:700;font-size:13px;}
+  .preview-duration{font-size:15px;font-weight:800;color:var(--green);text-align:center;padding-top:8px;border-top:1px solid rgba(0,229,255,.15);margin-top:8px;}
+
+  /* ── Renew Date ── */
+  .renew-tabs{display:flex;gap:0;margin-bottom:14px;border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+  .renew-tab{flex:1;padding:9px;text-align:center;cursor:pointer;font-size:13px;font-family:'Tajawal',sans-serif;font-weight:600;border:none;background:var(--surface);color:var(--muted);transition:.2s;}
+  .renew-tab.active{background:rgba(0,229,255,.12);color:var(--accent);}
+  .renew-preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+  .renew-preset-btn{padding:8px 4px;border-radius:8px;text-align:center;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:.2s;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:600;}
+  .renew-preset-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .renew-preset-btn.selected{border-color:var(--accent);background:rgba(0,229,255,.12);color:var(--accent);}
+  .renew-custom-section{display:none;}
+  .renew-custom-section.show{display:block;}
+  .renew-preview{margin:8px 0;padding:10px 12px;border-radius:9px;border:1px solid rgba(16,185,129,.2);background:rgba(16,185,129,.05);font-size:12px;color:var(--green);font-weight:700;text-align:center;display:none;}
+  .renew-preview.show{display:block;}
 
   /* ── Buttons ── */
   .btn-primary{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),#0891b2);border:none;border-radius:9px;color:#000;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;margin-top:6px;}
@@ -117,6 +146,8 @@
   .badge-soon{background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3);}
   .badge-blocked{background:rgba(239,68,68,.25);color:#fff;border:1px solid var(--red);}
   .badge-paused{background:rgba(168,85,247,.15);color:var(--purple);border:1px solid rgba(168,85,247,.3);}
+  .badge-scheduled{background:rgba(234,179,8,.15);color:var(--yellow);border:1px solid rgba(234,179,8,.3);}
+  .stat-card.c-yellow .stat-value{color:var(--yellow);}
   .action-btns{display:flex;gap:5px;justify-content:flex-end;}
   .btn-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;transition:.15s;font-size:14px;}
   .btn-renew{background:rgba(16,185,129,.1);color:var(--green);}
@@ -245,6 +276,7 @@
         <div class="stat-card c-green"><div class="stat-icon">✅</div><div class="stat-value" id="statActive">—</div><div class="stat-label">نشط</div></div>
         <div class="stat-card c-red"><div class="stat-icon">❌</div><div class="stat-value" id="statExpired">—</div><div class="stat-label">منتهي</div></div>
         <div class="stat-card c-orange"><div class="stat-icon">⚠️</div><div class="stat-value" id="statSoon">—</div><div class="stat-label">ينتهي قريباً</div></div>
+        <div class="stat-card c-yellow"><div class="stat-icon">🕐</div><div class="stat-value" id="statScheduled">—</div><div class="stat-label">مجدول</div></div>
         <div class="stat-card c-red"><div class="stat-icon">⛔</div><div class="stat-value" id="statBlocked">—</div><div class="stat-label">محظور</div></div>
         <div class="stat-card c-purple"><div class="stat-icon">⏸️</div><div class="stat-value" id="statPaused">—</div><div class="stat-label">مجمّد</div></div>
       </div>
@@ -263,6 +295,7 @@
               <button class="filter-tab" data-filter="active">نشط</button>
               <button class="filter-tab" data-filter="expired">منتهي</button>
               <button class="filter-tab" data-filter="soon">قريباً</button>
+              <button class="filter-tab" data-filter="scheduled">🕐 مجدول</button>
               <button class="filter-tab" data-filter="blocked">محظور</button>
               <button class="filter-tab" data-filter="paused">مجمّد</button>
             </div>
@@ -284,17 +317,58 @@
               <label class="form-label">👤 الاسم (يظهر في التطبيق)</label>
               <input class="form-control" id="newName" placeholder="مثال: أبو علي">
             </div>
-            <div class="form-label" style="margin-bottom:7px">⏱️ مدة الاشتراك</div>
-            <div class="duration-grid" id="addDurationGrid">
-              <div class="duration-btn" data-days="1">يوم</div>
-              <div class="duration-btn" data-days="7">أسبوع</div>
-              <div class="duration-btn" data-days="10">10 أيام</div>
-              <div class="duration-btn selected" data-days="30">شهر</div>
+            <div class="form-label" style="margin-bottom:8px">📅 تحديد وقت الاشتراك</div>
+
+            <!-- اختصارات سريعة -->
+            <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;">⚡ اختصارات سريعة</div>
+            <div class="preset-grid" id="addPresetGrid">
+              <div class="preset-btn" data-days="7">7 أيام</div>
+              <div class="preset-btn selected" data-days="30">شهر</div>
+              <div class="preset-btn" data-days="90">3 أشهر</div>
+              <div class="preset-btn" data-days="180">6 أشهر</div>
+              <div class="preset-btn" data-days="365">سنة</div>
+              <div class="preset-btn" data-days="0">مخصص ✏️</div>
             </div>
-            <div class="form-group">
-              <label class="form-label">🔢 أو عدد أيام مخصص</label>
-              <input type="number" class="form-control" id="customDays" placeholder="مثال: 15" min="1">
+
+            <!-- تاريخ وقت البدء -->
+            <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;">🟢 تاريخ ووقت البدء</div>
+            <div class="datetime-row">
+              <div class="datetime-col">
+                <label>📆 التاريخ</label>
+                <input type="date" id="addStartDate">
+              </div>
+              <div class="datetime-col">
+                <label>🕐 الوقت</label>
+                <input type="time" id="addStartTime" value="00:00">
+              </div>
             </div>
+
+            <!-- تاريخ وقت الانتهاء -->
+            <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;">🔴 تاريخ ووقت الانتهاء</div>
+            <div class="datetime-row">
+              <div class="datetime-col">
+                <label>📆 التاريخ</label>
+                <input type="date" id="addEndDate">
+              </div>
+              <div class="datetime-col">
+                <label>🕐 الوقت</label>
+                <input type="time" id="addEndTime" value="23:59">
+              </div>
+            </div>
+
+            <!-- معاينة المدة -->
+            <div class="duration-preview" id="addPreview">
+              <div class="preview-row">
+                <span class="preview-label">🟢 يبدأ:</span>
+                <span class="preview-val" id="previewStart">—</span>
+              </div>
+              <div class="preview-row">
+                <span class="preview-label">🔴 ينتهي:</span>
+                <span class="preview-val" id="previewEnd">—</span>
+              </div>
+              <div class="preview-duration" id="previewDuration">—</div>
+            </div>
+
             <div class="form-group">
               <label class="form-label">📝 ملاحظة</label>
               <input class="form-control" id="newNotes" placeholder="مثال: دفع 10,000">
@@ -373,19 +447,47 @@
 
 <!-- ── Renew Modal ── -->
 <div class="modal-overlay" id="renewModal">
-  <div class="modal">
+  <div class="modal" style="width:460px;max-width:96vw;">
     <h3>🔄 تجديد الاشتراك</h3>
-    <p id="renewMsg">اختر مدة التجديد:</p>
-    <div class="duration-grid" id="renewDurationGrid">
-      <div class="duration-btn" data-renew-days="1">يوم</div>
-      <div class="duration-btn" data-renew-days="7">أسبوع</div>
-      <div class="duration-btn" data-renew-days="10">10 أيام</div>
-      <div class="duration-btn selected" data-renew-days="30">شهر</div>
+    <p id="renewMsg" style="margin-bottom:14px;">اختر طريقة التجديد:</p>
+
+    <!-- تبويبات الوضع -->
+    <div class="renew-tabs" id="renewTabs">
+      <button class="renew-tab active" id="renewTabPreset" onclick="switchRenewTab('preset')">⚡ اختصار سريع</button>
+      <button class="renew-tab" id="renewTabCustom" onclick="switchRenewTab('custom')">📅 تاريخ مخصص</button>
     </div>
-    <div class="form-group" style="margin-top:10px;text-align:right;">
-      <label class="form-label">🔢 أو عدد أيام مخصص</label>
-      <input type="number" class="form-control" id="renewCustomDays" placeholder="مثال: 15" min="1">
+
+    <!-- قسم الاختصارات -->
+    <div id="renewPresetSection">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:7px;font-weight:600;">تمديد من تاريخ الانتهاء الحالي:</div>
+      <div class="renew-preset-grid" id="renewPresetGrid">
+        <div class="renew-preset-btn" data-rdays="7">7 أيام</div>
+        <div class="renew-preset-btn selected" data-rdays="30">شهر</div>
+        <div class="renew-preset-btn" data-rdays="90">3 أشهر</div>
+        <div class="renew-preset-btn" data-rdays="180">6 أشهر</div>
+        <div class="renew-preset-btn" data-rdays="365">سنة</div>
+        <div class="renew-preset-btn" data-rdays="730">سنتان</div>
+      </div>
     </div>
+
+    <!-- قسم التاريخ المخصص -->
+    <div id="renewCustomSection" class="renew-custom-section">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:7px;font-weight:600;">🔴 تحديد تاريخ ووقت الانتهاء الجديد:</div>
+      <div class="datetime-row">
+        <div class="datetime-col">
+          <label>📆 التاريخ</label>
+          <input type="date" id="renewEndDate">
+        </div>
+        <div class="datetime-col">
+          <label>🕐 الوقت</label>
+          <input type="time" id="renewEndTime" value="23:59">
+        </div>
+      </div>
+    </div>
+
+    <!-- معاينة -->
+    <div class="renew-preview" id="renewPreview">—</div>
+
     <div class="modal-btns" style="margin-top:14px">
       <button class="btn-cancel" onclick="closeModals()">إلغاء</button>
       <button class="btn-add" style="width:auto;padding:9px 22px" id="btnConfirmRenew">✅ تجديد</button>
@@ -421,12 +523,10 @@ document.getElementById('fbUrlDisplay').textContent = FB_CFG.databaseURL;
 // ── State ──
 let users = {};
 let curFilter = 'all';
-let addDays = 30;
 let renewDays = 30;
+let renewMode = 'preset'; // 'preset' | 'custom'
 let delTarget = null;
 let renewTarget = null;
-let useCustomDays = false;
-let useCustomRenewDays = false;
 let broadcastMsgs = [];
 
 // ── Helpers ──
@@ -516,27 +616,31 @@ function getStatus(u) {
   if (u.status === 'paused') return 'paused';
   if (u.status !== 'active') return 'expired';
   if (Date.now() >= (u.expires_at || 0)) return 'expired';
+  // مجدول: تاريخ البدء في المستقبل
+  if (u.starts_at && Date.now() < u.starts_at) return 'scheduled';
   if ((u.expires_at - Date.now()) <= 3 * 86400000) return 'soon';
   return 'active';
 }
 
 // ── Stats ──
 function updateStats() {
-  let a = 0, e = 0, s = 0, bl = 0, pa = 0;
+  let a = 0, e = 0, s = 0, bl = 0, pa = 0, sc = 0;
   Object.values(users).forEach(u => {
     const st = getStatus(u);
-    if (st === 'active') a++;
-    else if (st === 'expired') e++;
-    else if (st === 'soon') s++;
-    else if (st === 'blocked') bl++;
-    else if (st === 'paused') pa++;
+    if (st === 'active')    a++;
+    else if (st === 'expired')   e++;
+    else if (st === 'soon')      s++;
+    else if (st === 'blocked')   bl++;
+    else if (st === 'paused')    pa++;
+    else if (st === 'scheduled') sc++;
   });
-  document.getElementById('statTotal').textContent   = Object.keys(users).length;
-  document.getElementById('statActive').textContent  = a;
-  document.getElementById('statExpired').textContent = e;
-  document.getElementById('statSoon').textContent    = s;
-  document.getElementById('statBlocked').textContent = bl;
-  document.getElementById('statPaused').textContent  = pa;
+  document.getElementById('statTotal').textContent     = Object.keys(users).length;
+  document.getElementById('statActive').textContent    = a;
+  document.getElementById('statExpired').textContent   = e;
+  document.getElementById('statSoon').textContent      = s;
+  document.getElementById('statScheduled').textContent = sc;
+  document.getElementById('statBlocked').textContent   = bl;
+  document.getElementById('statPaused').textContent    = pa;
 }
 
 function fmtDate(ts) {
@@ -544,11 +648,54 @@ function fmtDate(ts) {
   return new Date(ts).toLocaleDateString('ar-IQ', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+function fmtDateTime(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  const date = d.toLocaleDateString('ar-IQ', { year: 'numeric', month: 'short', day: 'numeric' });
+  const time = d.toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit', hour12: false });
+  return `${date} — ${time}`;
+}
+
 function remDays(ts) {
   const d = ts - Date.now();
   if (d <= 0) return 'انتهى';
-  const days = Math.ceil(d / 86400000);
-  return days === 1 ? 'يوم واحد' : days + ' يوم';
+  const totalMins = Math.ceil(d / 60000);
+  const days  = Math.floor(totalMins / 1440);
+  const hours = Math.floor((totalMins % 1440) / 60);
+  const mins  = totalMins % 60;
+  if (days > 0)  return `${days} يوم ${hours > 0 ? hours + ' ساعة' : ''}`;
+  if (hours > 0) return `${hours} ساعة ${mins > 0 ? mins + ' دقيقة' : ''}`;
+  return `${mins} دقيقة`;
+}
+
+function calcDurationText(msStart, msEnd) {
+  const diff = msEnd - msStart;
+  if (diff <= 0) return '⚠️ التاريخ غير صحيح';
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000) / 60000);
+  let parts = [];
+  if (days  > 0) parts.push(`${days} يوم`);
+  if (hours > 0) parts.push(`${hours} ساعة`);
+  if (mins  > 0) parts.push(`${mins} دقيقة`);
+  return parts.length ? '⏱️ المدة: ' + parts.join(' و ') : 'أقل من دقيقة';
+}
+
+function toLocalInputDate(ts) {
+  const d = new Date(ts);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function toLocalInputTime(ts) {
+  const d = new Date(ts);
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+function getTimestampFromInputs(dateId, timeId) {
+  const dateVal = document.getElementById(dateId).value;
+  const timeVal = document.getElementById(timeId).value || '00:00';
+  if (!dateVal) return null;
+  return new Date(`${dateVal}T${timeVal}:00`).getTime();
 }
 
 // ── Render Table ──
@@ -561,9 +708,9 @@ function renderTable() {
     return true;
   });
 
-  const order = { active: 0, soon: 1, paused: 2, expired: 3, blocked: 4 };
+  const order = { active: 0, soon: 1, scheduled: 2, paused: 3, expired: 4, blocked: 5 };
   entries.sort(([, a], [, b]) => {
-    const d = (order[getStatus(a)] || 0) - (order[getStatus(b)] || 0);
+    const d = (order[getStatus(a)] ?? 4) - (order[getStatus(b)] ?? 4);
     return d !== 0 ? d : (b.expires_at || 0) - (a.expires_at || 0);
   });
 
@@ -574,25 +721,34 @@ function renderTable() {
   }
 
   const badgeMap = {
-    active:  '<span class="badge badge-active">✅ نشط</span>',
-    soon:    '<span class="badge badge-soon">⚠️ قريباً</span>',
-    expired: '<span class="badge badge-expired">❌ منتهي</span>',
-    blocked: '<span class="badge badge-blocked">⛔ محظور</span>',
-    paused:  '<span class="badge badge-paused">⏸️ مجمّد</span>',
+    active:    '<span class="badge badge-active">✅ نشط</span>',
+    soon:      '<span class="badge badge-soon">⚠️ قريباً</span>',
+    expired:   '<span class="badge badge-expired">❌ منتهي</span>',
+    blocked:   '<span class="badge badge-blocked">⛔ محظور</span>',
+    paused:    '<span class="badge badge-paused">⏸️ مجمّد</span>',
+    scheduled: '<span class="badge badge-scheduled">🕐 مجدول</span>',
   };
 
   const rows = entries.map(([id, u]) => {
     const st    = getStatus(u);
     const badge = badgeMap[st] || '';
     const short = id.length > 18 ? id.substring(0, 18) + '…' : id;
-    const exp   = u.expires_at ? fmtDate(u.expires_at) : '—';
-    const rem   = u.expires_at ? remDays(u.expires_at) : '';
+    const exp   = u.expires_at ? fmtDateTime(u.expires_at) : '—';
+    // للاشتراكات المجدولة: أظهر وقت البدء أيضاً
+    const startInfo = (st === 'scheduled' && u.starts_at)
+      ? `<br><span style="color:var(--yellow);font-size:10px;font-weight:700;">🕐 يبدأ: ${fmtDateTime(u.starts_at)}</span>`
+      : '';
+    const rem   = u.expires_at
+      ? (st === 'scheduled'
+          ? `<span style="color:var(--yellow);font-size:11px;">⏳ ${remDays(u.starts_at)} للبدء</span>`
+          : remDays(u.expires_at))
+      : '';
     const hasMsg = u.admin_messages && u.admin_messages.length > 0;
     return `<tr>
       <td><span class="device-id" onclick="copyText('${id}')" title="${id}">${short}</span></td>
       <td>${u.name || '<span style="color:var(--muted)">—</span>'}${hasMsg ? ' <span title="لديه رسائل إدارية">📣</span>' : ''}</td>
       <td>${badge}</td>
-      <td><span style="font-size:12px">${exp}</span><br><span style="color:var(--muted);font-size:11px">${rem}</span></td>
+      <td><span style="font-size:12px">${exp}</span>${startInfo}<br><span style="color:var(--muted);font-size:11px">${rem}</span></td>
       <td><div class="action-btns">
         <button class="btn-icon btn-renew"  data-id="${id}" title="تجديد">🔄</button>
         <button class="btn-icon btn-block"  data-id="${id}" data-status="${u.status}" title="${u.status === 'blocked' ? 'رفع الحظر' : 'حظر'}">
@@ -626,11 +782,7 @@ async function toggleStatus(id, action) {
   if (action === 'blocked') newStatus = (u.status === 'blocked') ? 'active' : 'blocked';
   if (action === 'paused')  newStatus = (u.status === 'paused')  ? 'active' : 'paused';
   try {
-    const updateData = { status: newStatus };
-    if (newStatus === 'active') {
-      updateData.payload_key = "CYBER_REAPER_SECURE_V26_KEY_9988";
-    }
-    await update(ref(fbDb, 'users/' + id), updateData);
+    await update(ref(fbDb, 'users/' + id), { status: newStatus });
     users[id].status = newStatus;
     updateStats(); renderTable();
     const label = action === 'blocked'
@@ -647,23 +799,26 @@ async function addUser() {
   const id   = (document.getElementById('newDeviceId').value || '').trim();
   const name = (document.getElementById('newName').value || '').trim();
   const note = (document.getElementById('newNotes').value || '').trim();
-  const custDaysStr = document.getElementById('customDays').value;
-  const custDays = parseInt(custDaysStr, 10);
-  
   if (!id) { toast('أدخل Device ID', 'error'); return; }
   if (id.length < 6) { toast('Device ID قصير جداً', 'error'); return; }
 
-  const finalDays = (useCustomDays && !isNaN(custDays) && custDays > 0) ? custDays : addDays;
-  const exp = Date.now() + finalDays * 86400000;
+  const startTs = getTimestampFromInputs('addStartDate', 'addStartTime');
+  const endTs   = getTimestampFromInputs('addEndDate',   'addEndTime');
+
+  if (!startTs) { toast('❌ حدد تاريخ البدء', 'error'); return; }
+  if (!endTs)   { toast('❌ حدد تاريخ الانتهاء', 'error'); return; }
+  if (endTs <= startTs) { toast('❌ تاريخ الانتهاء يجب أن يكون بعد البدء', 'error'); return; }
 
   const btn = document.getElementById('addBtn');
   btn.disabled = true; btn.innerHTML = '<span class="loader"></span> جاري التفعيل...';
   try {
-    const data = { 
-      status: 'active', 
-      expires_at: exp, 
-      created_at: Date.now(),
-      payload_key: 'CYBER_REAPER_SECURE_V26_KEY_9988'
+    // إذا وقت البدء في المستقبل → حفظ حالة 'scheduled' حتى يمنع التطبيق من الدخول
+    const isScheduled = startTs > Date.now();
+    const data = {
+      status:     isScheduled ? 'scheduled' : 'active',
+      starts_at:  startTs,
+      expires_at: endTs,
+      created_at: Date.now()
     };
     if (name) data.name = name;
     if (note) data.notes = note;
@@ -673,9 +828,12 @@ async function addUser() {
     document.getElementById('newDeviceId').value = '';
     document.getElementById('newName').value = '';
     document.getElementById('newNotes').value = '';
-    document.getElementById('customDays').value = '';
-    useCustomDays = false;
-    toast('✅ تم التفعيل لمدة ' + finalDays + ' يوم! ينتهي: ' + fmtDate(exp), 'success');
+    document.getElementById('addPreview').classList.remove('show');
+    initAddDateDefaults();
+    const msg = isScheduled
+      ? `🕐 تم جدولة! يبدأ: ${fmtDateTime(startTs)} — ينتهي: ${fmtDateTime(endTs)}`
+      : `✅ تم التفعيل! ينتهي: ${fmtDateTime(endTs)}`;
+    toast(msg, 'success');
   } catch (e) {
     toast('❌ فشل التفعيل: ' + e.message, 'error');
   } finally {
@@ -684,34 +842,67 @@ async function addUser() {
 }
 
 // ── Renew ──
+window.switchRenewTab = (mode) => {
+  renewMode = mode;
+  document.getElementById('renewTabPreset').classList.toggle('active', mode === 'preset');
+  document.getElementById('renewTabCustom').classList.toggle('active', mode === 'custom');
+  document.getElementById('renewPresetSection').style.display = mode === 'preset' ? '' : 'none';
+  document.getElementById('renewCustomSection').classList.toggle('show', mode === 'custom');
+  updateRenewPreview();
+};
+
+function updateRenewPreview() {
+  const preview = document.getElementById('renewPreview');
+  const u = renewTarget ? (users[renewTarget] || {}) : {};
+  let newExp;
+  if (renewMode === 'preset') {
+    const base = Math.max(Date.now(), u.expires_at || 0);
+    newExp = base + renewDays * 86400000;
+  } else {
+    newExp = getTimestampFromInputs('renewEndDate', 'renewEndTime');
+  }
+  if (newExp && newExp > Date.now()) {
+    preview.textContent = '📅 سينتهي: ' + fmtDateTime(newExp);
+    preview.classList.add('show');
+  } else {
+    preview.classList.remove('show');
+  }
+}
+
 function openRenewModal(id) {
   renewTarget = id;
   renewDays = 30;
-  useCustomRenewDays = false;
-  document.getElementById('renewCustomDays').value = '';
-  document.querySelectorAll('#renewDurationGrid .duration-btn').forEach((b, i) => b.classList.toggle('selected', i === 3)); // 3 is index for 30 days
-  document.getElementById('renewMsg').textContent = 'تجديد: ' + (users[id]?.name || id.substring(0, 20) + '…');
+  renewMode = 'preset';
+  // reset tabs
+  switchRenewTab('preset');
+  document.querySelectorAll('#renewPresetGrid .renew-preset-btn').forEach((b, i) => b.classList.toggle('selected', i === 1));
+  // prefill custom date with current expiry
+  const u = users[id] || {};
+  const base = Math.max(Date.now(), u.expires_at || 0);
+  const defaultEnd = base + 30 * 86400000;
+  document.getElementById('renewEndDate').value = toLocalInputDate(defaultEnd);
+  document.getElementById('renewEndTime').value = toLocalInputTime(defaultEnd);
+  document.getElementById('renewMsg').textContent = 'تجديد: ' + (u.name || id.substring(0, 20) + '…');
+  updateRenewPreview();
   document.getElementById('renewModal').classList.add('show');
 }
 
 async function confirmRenew() {
   if (!renewTarget) return;
   try {
-    const custRenewDaysStr = document.getElementById('renewCustomDays').value;
-    const custRenewDays = parseInt(custRenewDaysStr, 10);
-    const finalRenewDays = (useCustomRenewDays && !isNaN(custRenewDays) && custRenewDays > 0) ? custRenewDays : renewDays;
-
     const u = users[renewTarget] || {};
-    const base = Math.max(Date.now(), u.expires_at || 0);
-    const newExp = base + finalRenewDays * 86400000;
-    await update(ref(fbDb, 'users/' + renewTarget), { 
-      status: 'active', 
-      expires_at: newExp,
-      payload_key: 'CYBER_REAPER_SECURE_V26_KEY_9988'
-    });
-    users[renewTarget] = { ...u, status: 'active', expires_at: newExp, payload_key: 'CYBER_REAPER_SECURE_V26_KEY_9988' };
+    let newExp;
+    if (renewMode === 'preset') {
+      const base = Math.max(Date.now(), u.expires_at || 0);
+      newExp = base + renewDays * 86400000;
+    } else {
+      newExp = getTimestampFromInputs('renewEndDate', 'renewEndTime');
+      if (!newExp || newExp <= Date.now()) { toast('❌ تاريخ الانتهاء غير صحيح', 'error'); return; }
+    }
+    await update(ref(fbDb, 'users/' + renewTarget), { status: 'active', expires_at: newExp });
+    users[renewTarget] = { ...u, status: 'active', expires_at: newExp };
     updateStats(); renderTable();
-    toast('✅ تم التجديد لمدة ' + finalRenewDays + ' يوم! ينتهي: ' + fmtDate(newExp), 'success');
+    toast('✅ تم التجديد! ينتهي: ' + fmtDateTime(newExp), 'success');
   } catch (e) {
     toast('فشل التجديد: ' + e.message, 'error');
   }
@@ -777,6 +968,28 @@ document.getElementById('btnSendBcast')?.addEventListener('click', async () => {
   }
 });
 
+// ── Init Add Dates (default: now → now+30days) ──
+function initAddDateDefaults(daysOffset = 30) {
+  const now = Date.now();
+  const end = now + daysOffset * 86400000;
+  document.getElementById('addStartDate').value = toLocalInputDate(now);
+  document.getElementById('addStartTime').value = toLocalInputTime(now);
+  document.getElementById('addEndDate').value   = toLocalInputDate(end);
+  document.getElementById('addEndTime').value   = '23:59';
+  updateAddPreview();
+}
+
+function updateAddPreview() {
+  const startTs = getTimestampFromInputs('addStartDate', 'addStartTime');
+  const endTs   = getTimestampFromInputs('addEndDate',   'addEndTime');
+  const preview = document.getElementById('addPreview');
+  if (!startTs || !endTs) { preview.classList.remove('show'); return; }
+  document.getElementById('previewStart').textContent = fmtDateTime(startTs);
+  document.getElementById('previewEnd').textContent   = fmtDateTime(endTs);
+  document.getElementById('previewDuration').textContent = calcDurationText(startTs, endTs);
+  preview.classList.add('show');
+}
+
 // ── Events ──
 document.getElementById('btnRefresh').addEventListener('click', loadUsers);
 document.getElementById('searchInput').addEventListener('input', renderTable);
@@ -790,47 +1003,76 @@ document.querySelectorAll('.filter-tab').forEach(b => {
   });
 });
 
-document.querySelectorAll('#addDurationGrid .duration-btn').forEach(b => {
+// Preset buttons for add form
+document.querySelectorAll('#addPresetGrid .preset-btn').forEach(b => {
   b.addEventListener('click', () => {
-    addDays = parseInt(b.dataset.days);
-    useCustomDays = false;
-    document.getElementById('customDays').value = '';
-    document.querySelectorAll('#addDurationGrid .duration-btn').forEach(x => x.classList.remove('selected'));
+    document.querySelectorAll('#addPresetGrid .preset-btn').forEach(x => x.classList.remove('selected'));
     b.classList.add('selected');
+    const days = parseInt(b.dataset.days);
+    if (days === 0) {
+      // مخصص — let user pick freely
+      return;
+    }
+    // Apply preset from start date or now
+    const startTs = getTimestampFromInputs('addStartDate', 'addStartTime') || Date.now();
+    const endTs   = startTs + days * 86400000;
+    document.getElementById('addEndDate').value = toLocalInputDate(endTs);
+    document.getElementById('addEndTime').value = '23:59';
+    updateAddPreview();
   });
 });
 
-document.getElementById('customDays').addEventListener('input', () => {
-  if (document.getElementById('customDays').value) {
-    useCustomDays = true;
-    document.querySelectorAll('#addDurationGrid .duration-btn').forEach(x => x.classList.remove('selected'));
-  }
+// Live preview on any date/time change
+['addStartDate','addStartTime','addEndDate','addEndTime'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    // Clear preset selection when user manually changes dates
+    document.querySelectorAll('#addPresetGrid .preset-btn').forEach(x => x.classList.remove('selected'));
+    document.querySelector('#addPresetGrid .preset-btn[data-days="0"]')?.classList.add('selected');
+    updateAddPreview();
+  });
 });
 
 document.getElementById('addBtn').addEventListener('click', addUser);
 
-document.querySelectorAll('#renewDurationGrid .duration-btn').forEach(b => {
+// Renew preset buttons
+document.querySelectorAll('#renewPresetGrid .renew-preset-btn').forEach(b => {
   b.addEventListener('click', () => {
-    renewDays = parseInt(b.dataset.renewDays);
-    useCustomRenewDays = false;
-    document.getElementById('renewCustomDays').value = '';
-    document.querySelectorAll('#renewDurationGrid .duration-btn').forEach(x => x.classList.remove('selected'));
+    renewDays = parseInt(b.dataset.rdays);
+    document.querySelectorAll('#renewPresetGrid .renew-preset-btn').forEach(x => x.classList.remove('selected'));
     b.classList.add('selected');
+    updateRenewPreview();
   });
 });
 
-document.getElementById('renewCustomDays').addEventListener('input', () => {
-  if (document.getElementById('renewCustomDays').value) {
-    useCustomRenewDays = true;
-    document.querySelectorAll('#renewDurationGrid .duration-btn').forEach(x => x.classList.remove('selected'));
-  }
+// Renew custom date change
+['renewEndDate','renewEndTime'].forEach(id => {
+  document.getElementById(id)?.addEventListener('change', updateRenewPreview);
 });
 
 document.getElementById('btnConfirmRenew').addEventListener('click', confirmRenew);
 document.getElementById('btnConfirmDel').addEventListener('click', confirmDelete);
 
-// init broadcast list display
+// init
 refreshMsgList();
+initAddDateDefaults(30);
+
+// ── مؤقت تفعيل الاشتراكات المجدولة تلقائياً كل دقيقة ──
+async function autoActivateScheduled() {
+  const now = Date.now();
+  const toActivate = Object.entries(users).filter(([, u]) =>
+    u.status === 'scheduled' && u.starts_at && u.starts_at <= now && now < (u.expires_at || 0)
+  );
+  for (const [id, u] of toActivate) {
+    try {
+      await update(ref(fbDb, 'users/' + id), { status: 'active' });
+      users[id].status = 'active';
+      toast(`✅ تفعيل تلقائي: ${u.name || id.substring(0,16)}`, 'success');
+    } catch(e) { /* silent */ }
+  }
+  if (toActivate.length > 0) { updateStats(); renderTable(); }
+}
+setInterval(autoActivateScheduled, 60000); // فحص كل دقيقة
+autoActivateScheduled();               // فحص فوري عند فتح اللوحة
 </script>
 </body>
 </html>
